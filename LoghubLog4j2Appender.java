@@ -30,18 +30,18 @@ import org.apache.logging.log4j.core.util.Throwables;
 @Plugin(name = "Loghub", category = "Core", elementType = "appender", printObject = true)
 public class LoghubLog4j2Appender extends AbstractAppender {
 
-    private final String projectName;
-    private final String logstore;
-    private final String endpoint;
-    private final String accessKeyId;
-    private final String accessKey;
-    private final String stsToken;
-    private int packageTimeoutInMS;
-    private int logsCountPerPackage;
-    private int logsBytesPerPackage;
-    private int memPoolSizeInByte;
-    private int ioThreadsCount;
-    private final DateFormat dateFormat;
+    protected String projectName;
+    protected String logstore;
+    protected String endpoint;
+    protected String accessKeyId;
+    protected String accessKey;
+    protected String stsToken;
+    protected int packageTimeoutInMS;
+    protected int logsCountPerPackage;
+    protected int logsBytesPerPackage;
+    protected int memPoolSizeInByte;
+    protected int ioThreadsCount;
+    protected final DateFormat dateFormat;
 
     private LogProducer producer;
     private String topic = "";
@@ -116,6 +116,7 @@ public class LoghubLog4j2Appender extends AbstractAppender {
         super.stop();
         if (producer != null) {
             producer.flush();
+            threadSleepInMills(this.packageTimeoutInMS * 2);
             producer.close();
         }
 
@@ -219,11 +220,19 @@ public class LoghubLog4j2Appender extends AbstractAppender {
             memPoolSizeInByteInt, ioThreadsCountInt, tmpDateFormat);
     }
 
-    private static boolean isStrEmpty(String str) {
+    static boolean isStrEmpty(String str) {
         return str == null || str.length() == 0;
     }
 
-    private static int parseStrToInt(String str, final int defaultVal) {
+    static void threadSleepInMills(long timeInMills) {
+        try {
+            Thread.sleep(timeInMills);
+        } catch (Throwable e) {
+            //ignore
+        }
+    }
+
+    static int parseStrToInt(String str, final int defaultVal) {
         if (isStrEmpty(str)) {
             try {
                 return Integer.valueOf(str);
@@ -235,7 +244,7 @@ public class LoghubLog4j2Appender extends AbstractAppender {
         }
     }
 
-    private static void checkCondition(Boolean condition, String errorMsg) {
+    static void checkCondition(Boolean condition, String errorMsg) {
         if (!condition) {
             throw new IllegalArgumentException(errorMsg);
         }
