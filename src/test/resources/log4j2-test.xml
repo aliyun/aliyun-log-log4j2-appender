@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+    <Appenders>
+        <Loghub name="Loghub"
+                projectName = "your project name"
+                logstore = "your logstore"
+                endpoint = "your endpoint"
+                accessKeyId = "your accessKeyId"
+                accessKey = "your accessKey">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+        </Loghub>
+    </Appenders>
+    <Loggers>
+        <Logger name="slsLogger" level="warn">
+            <AppenderRef ref="Loghub"/>
+        </Logger>
+        <Root level="warn">
+            <AppenderRef ref="Loghub"/>
+        </Root>
+    </Loggers>
+</Configuration>
