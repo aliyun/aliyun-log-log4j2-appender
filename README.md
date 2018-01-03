@@ -3,7 +3,7 @@
 - log-loghub-producer 0.1.8
 - protobuf-java 2.5.0
 
- > 该版本主要适配于Log4J 2.X以上版本，以下版本请参考(aliyun-log-log4j-appender](https://github.com/aliyun/aliyun-log-log4j-appender)
+ > 该版本主要适配于Log4J 2.X以上版本，以下版本请参考[aliyun-log-log4j-appender](https://github.com/aliyun/aliyun-log-log4j-appender)
 
 
 # 配置步骤
