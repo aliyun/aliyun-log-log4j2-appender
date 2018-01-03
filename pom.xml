@@ -6,7 +6,7 @@
 
     <groupId>com.aliyun.openservices</groupId>
     <artifactId>log-loghub-log4j2-appender</artifactId>
-    <version>0.1.0</version>
+    <version>0.1.1</version>
 
     <name>loghub log4j2 appender for Java API Version 0.6.0</name>
     <licenses>
