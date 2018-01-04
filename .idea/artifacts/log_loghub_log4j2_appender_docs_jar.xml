@@ -1,8 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="jar" name="log-loghub-log4j2-appender-docs:jar">
-    <output-path>$USER_HOME$/Desktop/log4j2appender</output-path>
-    <root id="archive" name="log-loghub-log4j2-appender-docs_jar.jar">
-      <element id="dir-copy" path="$USER_HOME$/Desktop/log4j2appender/docs" />
-    </root>
-  </artifact>
-</component>
