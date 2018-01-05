@@ -4,7 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.Test;
 
-public class LoghubLog4j2AppenderTest {
+public class LoghubAppenderTest {
 
     private static Logger logger = LogManager.getLogger("slsLogger");
 
@@ -23,5 +23,4 @@ public class LoghubLog4j2AppenderTest {
     public void testLogLevelInfo() {
         logger.info("This is a test error message logged by log4j2, level is info,should not be logged.");
     }
-
 }

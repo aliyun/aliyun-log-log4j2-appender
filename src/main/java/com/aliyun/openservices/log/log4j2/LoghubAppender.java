@@ -28,7 +28,7 @@ import org.apache.logging.log4j.core.util.Booleans;
 import org.apache.logging.log4j.core.util.Throwables;
 
 @Plugin(name = "Loghub", category = "Core", elementType = "appender", printObject = true)
-public class LoghubLog4j2Appender extends AbstractAppender {
+public class LoghubAppender extends AbstractAppender {
 
     protected String projectName;
     protected String logstore;
@@ -40,7 +40,9 @@ public class LoghubLog4j2Appender extends AbstractAppender {
     protected int logsCountPerPackage;
     protected int logsBytesPerPackage;
     protected int memPoolSizeInByte;
-    protected int ioThreadsCount;
+    protected int shardHashUpdateIntervalInMS;
+    protected int retryTimes;
+    protected int maxIOThreadSizeInPool;
     protected final DateFormat dateFormat;
 
     private LogProducer producer;
@@ -57,35 +59,41 @@ public class LoghubLog4j2Appender extends AbstractAppender {
         DEFAULT_TIME_FORMAT.setTimeZone(TimeZone.getTimeZone(DEFAULT_TIME_ZONE));
     }
 
-    protected LoghubLog4j2Appender(String name,
-                                   Filter filter,
-                                   Layout<? extends Serializable> layout,
-                                   boolean ignoreExceptions,
-                                   String projectName,
-                                   String logstore,
-                                   String endpoint,
-                                   String accessKeyId,
-                                   String accessKey,
-                                   String stsToken,
-                                   int packageTimeoutInMS,
-                                   int logsCountPerPackage,
-                                   int logsBytesPerPackage,
-                                   int memPoolSizeInByte,
-                                   int ioThreadsCount,
-                                   DateFormat dateFormat
+    protected LoghubAppender(String name,
+                             Filter filter,
+                             Layout<? extends Serializable> layout,
+                             boolean ignoreExceptions,
+                             String projectName,
+                             String logstore,
+                             String endpoint,
+                             String accessKeyId,
+                             String accessKey,
+                             String stsToken,
+                             int packageTimeoutInMS,
+                             int logsCountPerPackage,
+                             int logsBytesPerPackage,
+                             int memPoolSizeInByte,
+                             int shardHashUpdateIntervalInMS,
+                             int retryTimes,
+                             int maxIOThreadSizeInPool,
+                             String topic,
+                             DateFormat dateFormat
     ) {
         super(name, filter, layout, ignoreExceptions);
         this.projectName = projectName;
-        this.logstore = logstore;
         this.endpoint = endpoint;
         this.accessKey = accessKey;
         this.accessKeyId = accessKeyId;
         this.stsToken = stsToken;
+        this.logstore = logstore;
         this.packageTimeoutInMS = packageTimeoutInMS;
         this.logsCountPerPackage = logsCountPerPackage;
         this.logsBytesPerPackage = logsBytesPerPackage;
         this.memPoolSizeInByte = memPoolSizeInByte;
-        this.ioThreadsCount = ioThreadsCount;
+        this.shardHashUpdateIntervalInMS = shardHashUpdateIntervalInMS;
+        this.retryTimes = retryTimes;
+        this.maxIOThreadSizeInPool = maxIOThreadSizeInPool;
+        this.topic = topic;
         this.dateFormat = dateFormat;
     }
 
@@ -102,10 +110,13 @@ public class LoghubLog4j2Appender extends AbstractAppender {
 
         ProducerConfig producerConfig = new ProducerConfig();
         producerConfig.packageTimeoutInMS = this.packageTimeoutInMS;
-        producerConfig.logsBytesPerPackage = this.logsBytesPerPackage;
         producerConfig.logsCountPerPackage = this.logsCountPerPackage;
+        producerConfig.logsBytesPerPackage = this.logsBytesPerPackage;
         producerConfig.memPoolSizeInByte = this.memPoolSizeInByte;
-        producerConfig.maxIOThreadSizeInPool = this.ioThreadsCount;
+        producerConfig.shardHashUpdateIntervalInMS = this.shardHashUpdateIntervalInMS;
+        producerConfig.retryTimes = this.retryTimes;
+        producerConfig.maxIOThreadSizeInPool = this.maxIOThreadSizeInPool;
+
 
         producer = new LogProducer(producerConfig);
         producer.setProjectConfig(projectConfig);
@@ -145,7 +156,7 @@ public class LoghubLog4j2Appender extends AbstractAppender {
         Throwable throwable = event.getThrown();
         if (throwable != null) {
             for (String s : Throwables.toStringList(throwable)) {
-                message += System.lineSeparator() + s;
+                message += System.getProperty("line.separator") + s;
             }
         }
 
@@ -162,7 +173,7 @@ public class LoghubLog4j2Appender extends AbstractAppender {
     }
 
     @PluginFactory
-    public static LoghubLog4j2Appender createAppender(
+    public static LoghubAppender createAppender(
             @PluginAttribute("name") final String name,
             @PluginElement("Filter") final Filter filter,
             @PluginElement("Layout") Layout<? extends Serializable> layout,
@@ -178,7 +189,10 @@ public class LoghubLog4j2Appender extends AbstractAppender {
             @PluginAttribute("logsCountPerPackage") final String logsCountPerPackage, // int
             @PluginAttribute("logsBytesPerPackage") final String logsBytesPerPackage, // int
             @PluginAttribute("memPoolSizeInByte") final String memPoolSizeInByte, // int
-            @PluginAttribute("ioThreadsCount") final String ioThreadsCount, //int
+            @PluginAttribute("shardHashUpdateIntervalInMS") final String shardHashUpdateIntervalInMS, //int
+            @PluginAttribute("retryTimes") final String retryTimes, //int
+            @PluginAttribute("maxIOThreadSizeInPool") final String maxIOThreadSizeInPool, //int
+            @PluginAttribute("topic") final String topic,
             @PluginAttribute("timeFormat") final String timeFormat,
             @PluginAttribute("timeZone") final String timeZone) {
 
@@ -204,8 +218,14 @@ public class LoghubLog4j2Appender extends AbstractAppender {
         int memPoolSizeInByteInt = parseStrToInt(memPoolSizeInByte, 104857600);
         checkCondition((memPoolSizeInByteInt > 0), "Config value [memPoolSizeInByte] must > 0.");
 
-        int ioThreadsCountInt = parseStrToInt(ioThreadsCount, 1);
-        checkCondition((ioThreadsCountInt > 0), "Config value [ioThreadsCount] must > 0.");
+        int shardHashUpdateIntervalInMSInt = parseStrToInt(shardHashUpdateIntervalInMS, 600000);
+        checkCondition((shardHashUpdateIntervalInMSInt > 0), "Config value [shardHashUpdateIntervalInMS] must > 0.");
+
+        int retryTimesInt = parseStrToInt(retryTimes, 3);
+        checkCondition((retryTimesInt > 0), "Config value [retryTimes] must > 0.");
+
+        int maxIOThreadSizeInPoolInt = parseStrToInt(maxIOThreadSizeInPool, 8);
+        checkCondition((maxIOThreadSizeInPoolInt > 0), "Config value [maxIOThreadSizeInPool] must > 0.");
 
         DateFormat tmpDateFormat;
         try {
@@ -215,9 +235,10 @@ public class LoghubLog4j2Appender extends AbstractAppender {
             tmpDateFormat = DEFAULT_TIME_FORMAT;
         }
 
-        return new LoghubLog4j2Appender(name, filter, layout, ignoreExceptions, projectName, logstore, endpoint,
+        return new LoghubAppender(name, filter, layout, ignoreExceptions, projectName, logstore, endpoint,
                 accessKeyId, accessKey, stsToken, packageTimeoutInMSInt, logsCountPerPackageInt, logsBytesPerPackageInt,
-                memPoolSizeInByteInt, ioThreadsCountInt, tmpDateFormat);
+                memPoolSizeInByteInt, shardHashUpdateIntervalInMSInt, retryTimesInt, maxIOThreadSizeInPoolInt,
+                topic, tmpDateFormat);
     }
 
     static boolean isStrEmpty(String str) {

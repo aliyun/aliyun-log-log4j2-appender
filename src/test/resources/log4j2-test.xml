@@ -2,18 +2,27 @@
 <Configuration status="WARN">
     <Appenders>
         <Loghub name="Loghub"
-                projectName="ali-cn-shanghai-corp-sls-admin"
-                logstore="testappender"
-                endpoint="cn-shanghai-corp.sls.aliyuncs.com"
-                accessKeyId=""
-                accessKey="">
+                projectName="your project"
+                logstore="your logstore"
+                endpoint="your endpoint"
+                accessKeyId="your accessKeyId"
+                accessKey="your accessKey"
+                stsToken="your stsToken"
+                packageTimeoutInMS="3000"
+                logsCountPerPackage="4096"
+                logsBytesPerPackage="3145728"
+                memPoolSizeInByte="104857600"
+                shardHashUpdateIntervalInMS="600000"
+                retryTimes="3"
+                maxIOThreadSizeInPool="8"
+                topic="your topic"
+                timeFormat="yyyy-MM-dd'T'HH:mmZ"
+                timeZone="UTC"
+                ignoreExceptions="true">
             <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
         </Loghub>
     </Appenders>
     <Loggers>
-        <Logger name="slsLogger" level="warn">
-            <AppenderRef ref="Loghub"/>
-        </Logger>
         <Root level="warn">
             <AppenderRef ref="Loghub"/>
         </Root>
