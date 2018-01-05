@@ -11,9 +11,6 @@
         </Loghub>
     </Appenders>
     <Loggers>
-        <Logger name="slsLogger" level="warn">
-            <AppenderRef ref="Loghub"/>
-        </Logger>
         <Root level="warn">
             <AppenderRef ref="Loghub"/>
         </Root>
