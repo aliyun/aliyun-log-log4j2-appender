@@ -4,7 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.Test;
 
-public class LoghubLog4j2AppenderTest {
+public class LoghubAppenderTest {
 
     private static Logger logger = LogManager.getLogger("slsLogger");
 
