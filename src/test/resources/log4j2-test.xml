@@ -2,11 +2,11 @@
 <Configuration status="WARN">
     <Appenders>
         <Loghub name="Loghub"
-                projectName = "ali-cn-shanghai-corp-sls-admin"
-                logstore = "testappender"
-                endpoint = "cn-shanghai-corp.sls.aliyuncs.com"
-                accessKeyId = ""
-                accessKey = "">
+                projectName="ali-cn-shanghai-corp-sls-admin"
+                logstore="testappender"
+                endpoint="cn-shanghai-corp.sls.aliyuncs.com"
+                accessKeyId=""
+                accessKey="">
             <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
         </Loghub>
     </Appenders>

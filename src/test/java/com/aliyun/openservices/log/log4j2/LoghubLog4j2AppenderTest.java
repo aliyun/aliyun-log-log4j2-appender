@@ -16,7 +16,7 @@ public class LoghubLog4j2AppenderTest {
     @Test
     public void testLogThrowable() {
         logger.error("This is a test error message logged by log4j2.",
-            new UnsupportedOperationException("log4j2 appender test."));
+                new UnsupportedOperationException("log4j2 appender test."));
     }
 
     @Test
