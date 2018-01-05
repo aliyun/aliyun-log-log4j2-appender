@@ -24,4 +24,8 @@ public class LoghubLog4j2AppenderTest {
         logger.info("This is a test error message logged by log4j2, level is info,should not be logged.");
     }
 
+    public static void main(String[] args) {
+        System.out.println(System.getProperty("line.separator"));
+    }
+
 }

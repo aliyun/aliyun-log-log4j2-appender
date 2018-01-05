@@ -145,7 +145,7 @@ public class LoghubLog4j2Appender extends AbstractAppender {
         Throwable throwable = event.getThrown();
         if (throwable != null) {
             for (String s : Throwables.toStringList(throwable)) {
-                message += System.lineSeparator() + s;
+                message += System.getProperty("line.separator") + s;
             }
         }
 

@@ -24,3 +24,8 @@ hs_err_pid*
 # IntelliJ related files
 *.iml
 .idea/*
+
+target/
+
+# Local test files
+log4j2-test-wubo.xml
