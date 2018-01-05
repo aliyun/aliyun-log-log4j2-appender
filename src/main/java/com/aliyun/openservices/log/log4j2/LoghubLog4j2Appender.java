@@ -73,7 +73,7 @@ public class LoghubLog4j2Appender extends AbstractAppender {
                                    int memPoolSizeInByte,
                                    int ioThreadsCount,
                                    DateFormat dateFormat
-                                   ) {
+    ) {
         super(name, filter, layout, ignoreExceptions);
         this.projectName = projectName;
         this.logstore = logstore;
@@ -127,7 +127,7 @@ public class LoghubLog4j2Appender extends AbstractAppender {
         List<LogItem> logItems = new ArrayList<LogItem>();
         LogItem item = new LogItem();
         logItems.add(item);
-        item.SetTime((int)(event.getTimeMillis() / 1000));
+        item.SetTime((int) (event.getTimeMillis() / 1000));
         item.PushBack("time", this.dateFormat.format(new Date(event.getTimeMillis())));
         item.PushBack("level", event.getLevel().toString());
         item.PushBack("thread", event.getThreadName());
@@ -144,8 +144,8 @@ public class LoghubLog4j2Appender extends AbstractAppender {
         String message = event.getMessage().getFormattedMessage();
         Throwable throwable = event.getThrown();
         if (throwable != null) {
-            for(String s: Throwables.toStringList(throwable)){
-                message += System.lineSeparator() + s ;
+            for (String s : Throwables.toStringList(throwable)) {
+                message += System.lineSeparator() + s;
             }
         }
 
@@ -163,24 +163,24 @@ public class LoghubLog4j2Appender extends AbstractAppender {
 
     @PluginFactory
     public static LoghubLog4j2Appender createAppender(
-        @PluginAttribute("name") final String name,
-        @PluginElement("Filter") final Filter filter,
-        @PluginElement("Layout") Layout<? extends Serializable> layout,
-        @PluginConfiguration final Configuration config,
-        @PluginAttribute("ignoreExceptions") final String ignore,
-        @PluginAttribute("projectName") final String projectName,
-        @PluginAttribute("logstore") final String logstore,
-        @PluginAttribute("endpoint") final String endpoint,
-        @PluginAttribute("accessKeyId") final String accessKeyId,
-        @PluginAttribute("accessKey") final String accessKey,
-        @PluginAttribute("stsToken") final String stsToken,
-        @PluginAttribute("packageTimeoutInMS") final String packageTimeoutInMS, // int
-        @PluginAttribute("logsCountPerPackage") final String logsCountPerPackage, // int
-        @PluginAttribute("logsBytesPerPackage") final String logsBytesPerPackage, // int
-        @PluginAttribute("memPoolSizeInByte") final String memPoolSizeInByte, // int
-        @PluginAttribute("ioThreadsCount") final String ioThreadsCount, //int
-        @PluginAttribute("timeFormat") final String timeFormat,
-        @PluginAttribute("timeZone") final String timeZone) {
+            @PluginAttribute("name") final String name,
+            @PluginElement("Filter") final Filter filter,
+            @PluginElement("Layout") Layout<? extends Serializable> layout,
+            @PluginConfiguration final Configuration config,
+            @PluginAttribute("ignoreExceptions") final String ignore,
+            @PluginAttribute("projectName") final String projectName,
+            @PluginAttribute("logstore") final String logstore,
+            @PluginAttribute("endpoint") final String endpoint,
+            @PluginAttribute("accessKeyId") final String accessKeyId,
+            @PluginAttribute("accessKey") final String accessKey,
+            @PluginAttribute("stsToken") final String stsToken,
+            @PluginAttribute("packageTimeoutInMS") final String packageTimeoutInMS, // int
+            @PluginAttribute("logsCountPerPackage") final String logsCountPerPackage, // int
+            @PluginAttribute("logsBytesPerPackage") final String logsBytesPerPackage, // int
+            @PluginAttribute("memPoolSizeInByte") final String memPoolSizeInByte, // int
+            @PluginAttribute("ioThreadsCount") final String ioThreadsCount, //int
+            @PluginAttribute("timeFormat") final String timeFormat,
+            @PluginAttribute("timeZone") final String timeZone) {
 
         Boolean ignoreExceptions = Booleans.parseBoolean(ignore, true);
 
@@ -195,11 +195,11 @@ public class LoghubLog4j2Appender extends AbstractAppender {
 
         int logsCountPerPackageInt = parseStrToInt(logsCountPerPackage, 4096);
         checkCondition((logsCountPerPackageInt >= 1 && logsCountPerPackageInt <= 4096),
-            "Config value [logsCountPerPackage] must between [1,4096].");
+                "Config value [logsCountPerPackage] must between [1,4096].");
 
         int logsBytesPerPackageInt = parseStrToInt(logsBytesPerPackage, 5 * 1024 * 1024);
         checkCondition((logsBytesPerPackageInt >= 1 && logsBytesPerPackageInt <= 5 * 1024 * 1024),
-            "Config value [logsBytesPerPackage] must between [1,3145728].");
+                "Config value [logsBytesPerPackage] must between [1,3145728].");
 
         int memPoolSizeInByteInt = parseStrToInt(memPoolSizeInByte, 104857600);
         checkCondition((memPoolSizeInByteInt > 0), "Config value [memPoolSizeInByte] must > 0.");
@@ -216,8 +216,8 @@ public class LoghubLog4j2Appender extends AbstractAppender {
         }
 
         return new LoghubLog4j2Appender(name, filter, layout, ignoreExceptions, projectName, logstore, endpoint,
-            accessKeyId, accessKey, stsToken, packageTimeoutInMSInt, logsCountPerPackageInt, logsBytesPerPackageInt,
-            memPoolSizeInByteInt, ioThreadsCountInt, tmpDateFormat);
+                accessKeyId, accessKey, stsToken, packageTimeoutInMSInt, logsCountPerPackageInt, logsBytesPerPackageInt,
+                memPoolSizeInByteInt, ioThreadsCountInt, tmpDateFormat);
     }
 
     static boolean isStrEmpty(String str) {
