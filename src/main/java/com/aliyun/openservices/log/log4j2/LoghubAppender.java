@@ -117,7 +117,6 @@ public class LoghubAppender extends AbstractAppender {
         producerConfig.retryTimes = this.retryTimes;
         producerConfig.maxIOThreadSizeInPool = this.maxIOThreadSizeInPool;
 
-
         producer = new LogProducer(producerConfig);
         producer.setProjectConfig(projectConfig);
     }
@@ -169,7 +168,8 @@ public class LoghubAppender extends AbstractAppender {
                 item.PushBack(keys[i].toString(), properties.get(keys[i].toString()));
             }
         }
-        producer.send(this.projectName, this.logstore, this.topic, null, logItems);
+        producer.send(this.projectName, this.logstore, this.topic, null, logItems, new LoghubAppenderCallback(LOGGER,
+                this.projectName, this.logstore, this.topic, null, logItems));
     }
 
     @PluginFactory
