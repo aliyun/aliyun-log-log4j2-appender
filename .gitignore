@@ -29,4 +29,4 @@ target/
 
 # Local test files
 log4j2-test-wubo.xml
-log4j2-wubo.properties
+log4j2-test-wubo.properties
