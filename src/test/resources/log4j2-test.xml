@@ -12,7 +12,6 @@
                 logsCountPerPackage="4096"
                 logsBytesPerPackage="3145728"
                 memPoolSizeInByte="104857600"
-                shardHashUpdateIntervalInMS="600000"
                 retryTimes="3"
                 maxIOThreadSizeInPool="8"
                 topic="your topic"
