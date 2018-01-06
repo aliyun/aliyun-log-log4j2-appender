@@ -40,7 +40,6 @@ public class LoghubAppender extends AbstractAppender {
     protected int logsCountPerPackage;
     protected int logsBytesPerPackage;
     protected int memPoolSizeInByte;
-    protected int shardHashUpdateIntervalInMS;
     protected int retryTimes;
     protected int maxIOThreadSizeInPool;
     protected final DateFormat dateFormat;
@@ -73,7 +72,6 @@ public class LoghubAppender extends AbstractAppender {
                              int logsCountPerPackage,
                              int logsBytesPerPackage,
                              int memPoolSizeInByte,
-                             int shardHashUpdateIntervalInMS,
                              int retryTimes,
                              int maxIOThreadSizeInPool,
                              String topic,
@@ -90,7 +88,6 @@ public class LoghubAppender extends AbstractAppender {
         this.logsCountPerPackage = logsCountPerPackage;
         this.logsBytesPerPackage = logsBytesPerPackage;
         this.memPoolSizeInByte = memPoolSizeInByte;
-        this.shardHashUpdateIntervalInMS = shardHashUpdateIntervalInMS;
         this.retryTimes = retryTimes;
         this.maxIOThreadSizeInPool = maxIOThreadSizeInPool;
         this.topic = topic;
@@ -113,10 +110,8 @@ public class LoghubAppender extends AbstractAppender {
         producerConfig.logsCountPerPackage = this.logsCountPerPackage;
         producerConfig.logsBytesPerPackage = this.logsBytesPerPackage;
         producerConfig.memPoolSizeInByte = this.memPoolSizeInByte;
-        producerConfig.shardHashUpdateIntervalInMS = this.shardHashUpdateIntervalInMS;
         producerConfig.retryTimes = this.retryTimes;
         producerConfig.maxIOThreadSizeInPool = this.maxIOThreadSizeInPool;
-
 
         producer = new LogProducer(producerConfig);
         producer.setProjectConfig(projectConfig);
@@ -169,7 +164,8 @@ public class LoghubAppender extends AbstractAppender {
                 item.PushBack(keys[i].toString(), properties.get(keys[i].toString()));
             }
         }
-        producer.send(this.projectName, this.logstore, this.topic, null, logItems);
+        producer.send(this.projectName, this.logstore, this.topic, null, logItems, new LoghubAppenderCallback(LOGGER,
+                this.projectName, this.logstore, this.topic, null, logItems));
     }
 
     @PluginFactory
@@ -189,7 +185,6 @@ public class LoghubAppender extends AbstractAppender {
             @PluginAttribute("logsCountPerPackage") final String logsCountPerPackage, // int
             @PluginAttribute("logsBytesPerPackage") final String logsBytesPerPackage, // int
             @PluginAttribute("memPoolSizeInByte") final String memPoolSizeInByte, // int
-            @PluginAttribute("shardHashUpdateIntervalInMS") final String shardHashUpdateIntervalInMS, //int
             @PluginAttribute("retryTimes") final String retryTimes, //int
             @PluginAttribute("maxIOThreadSizeInPool") final String maxIOThreadSizeInPool, //int
             @PluginAttribute("topic") final String topic,
@@ -218,9 +213,6 @@ public class LoghubAppender extends AbstractAppender {
         int memPoolSizeInByteInt = parseStrToInt(memPoolSizeInByte, 104857600);
         checkCondition((memPoolSizeInByteInt > 0), "Config value [memPoolSizeInByte] must > 0.");
 
-        int shardHashUpdateIntervalInMSInt = parseStrToInt(shardHashUpdateIntervalInMS, 600000);
-        checkCondition((shardHashUpdateIntervalInMSInt > 0), "Config value [shardHashUpdateIntervalInMS] must > 0.");
-
         int retryTimesInt = parseStrToInt(retryTimes, 3);
         checkCondition((retryTimesInt > 0), "Config value [retryTimes] must > 0.");
 
@@ -237,8 +229,7 @@ public class LoghubAppender extends AbstractAppender {
 
         return new LoghubAppender(name, filter, layout, ignoreExceptions, projectName, logstore, endpoint,
                 accessKeyId, accessKey, stsToken, packageTimeoutInMSInt, logsCountPerPackageInt, logsBytesPerPackageInt,
-                memPoolSizeInByteInt, shardHashUpdateIntervalInMSInt, retryTimesInt, maxIOThreadSizeInPoolInt,
-                topic, tmpDateFormat);
+                memPoolSizeInByteInt, retryTimesInt, maxIOThreadSizeInPoolInt, topic, tmpDateFormat);
     }
 
     static boolean isStrEmpty(String str) {
