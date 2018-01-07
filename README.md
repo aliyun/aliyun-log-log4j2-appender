@@ -18,7 +18,7 @@
 </dependency>
 <dependency>
      <groupId>com.aliyun.openservices</groupId>
-     <artifactId>log-loghub-log4j2-appender</artifactId>
+     <artifactId>aliyun-log-log4j2-appender</artifactId>
      <version>0.1.0</version>
 </dependency>
 ```
