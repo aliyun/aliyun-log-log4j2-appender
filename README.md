@@ -60,7 +60,6 @@ time: 2018-01-02T03:15+0000
                 endpoint="your project endpoint"
                 accessKeyId="your accesskey id"
                 accessKey="your accesskey"
-                stsToken="your ststoken"
                 packageTimeoutInMS="3000"
                 logsCountPerPackage="4096"
                 logsBytesPerPackage="3145728"
