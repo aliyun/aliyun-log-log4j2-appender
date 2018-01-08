@@ -30,3 +30,6 @@ target/
 # Local test files
 log4j2-test-wubo.xml
 log4j2-wubo.xml
+
+# macos
+.DS_Store
