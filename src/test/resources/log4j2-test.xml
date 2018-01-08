@@ -7,7 +7,6 @@
                 endpoint="your project endpoint"
                 accessKeyId="your accesskey id"
                 accessKey="your accesskey"
-                stsToken="your ststoken"
                 packageTimeoutInMS="3000"
                 logsCountPerPackage="4096"
                 logsBytesPerPackage="3145728"

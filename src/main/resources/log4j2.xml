@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+    <Appenders>
+        <Loghub name="loghubAppender1"
+                projectName="test-proj"
+                logstore="store1"
+                endpoint=""
+                accessKeyId=""
+                accessKey=""
+                packageTimeoutInMS="3000"
+                logsCountPerPackage="4096"
+                logsBytesPerPackage="3145728"
+                memPoolSizeInByte="104857600"
+                retryTimes="3"
+                maxIOThreadSizeInPool="8"
+                topic="topic1"
+                timeFormat="yyyy-MM-dd'T'HH:mmZ"
+                timeZone="UTC"
+                ignoreExceptions="true">
+        </Loghub>
+        <Loghub name="loghubAppender2"
+                projectName="test-proj"
+                logstore="store2"
+                endpoint=""
+                accessKeyId=""
+                accessKey=""
+                packageTimeoutInMS="3000"
+                logsCountPerPackage="4096"
+                logsBytesPerPackage="3145728"
+                memPoolSizeInByte="104857600"
+                retryTimes="3"
+                maxIOThreadSizeInPool="8"
+                topic="topic2"
+                timeFormat="yyyy-MM-dd'T'HH:mmZ"
+                timeZone="UTC"
+                ignoreExceptions="true">
+            <Filters>
+                <!-- Now deny warn, error and fatal messages -->
+                <ThresholdFilter level="warn"  onMatch="DENY"   onMismatch="NEUTRAL"/>
+                <ThresholdFilter level="error" onMatch="DENY"   onMismatch="NEUTRAL"/>
+                <ThresholdFilter level="fatal" onMatch="DENY"   onMismatch="NEUTRAL"/>
+
+                <!-- This filter accepts info, warn, error, fatal and denies debug/trace -->
+                <ThresholdFilter level="info"  onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+        </Loghub>
+        <Console name="STDOUT" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+        </Console>
+    </Appenders>
+    <Loggers>
+        <Root level="DEBUG">
+            <AppenderRef ref="loghubAppender1" level="WARN"/>
+            <AppenderRef ref="loghubAppender2"/>
+            <AppenderRef ref="STDOUT"/>
+        </Root>
+    </Loggers>
+</Configuration>
