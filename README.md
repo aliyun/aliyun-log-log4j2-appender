@@ -6,7 +6,7 @@ Log4j2是由log4j的升级版本。通过使用Log4j2，您可以控制日志信
 通过Aliyun Log Log4j2 Appender，您可以控制日志的输出目的地为阿里云日志服务。需要注意的是，Aliyun Log Log4j2 Appender不支持设置日志的输出格式，写到日志服务中的日志的样式如下：
 ```
 level: ERROR
-location:  com.aliyun.openservices.log.log4j2.example.Log4j2AppenderExample.main(Log4j2AppenderExample.java:16)
+location: com.aliyun.openservices.log.log4j2.example.Log4j2AppenderExample.main(Log4j2AppenderExample.java:16)
 message: error log
 thread: main
 time: 2018-01-02T03:15+0000
