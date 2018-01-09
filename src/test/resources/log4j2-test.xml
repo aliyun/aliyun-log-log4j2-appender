@@ -7,7 +7,6 @@
                 endpoint="your project endpoint"
                 accessKeyId="your accesskey id"
                 accessKey="your accesskey"
-                stsToken="your ststoken"
                 packageTimeoutInMS="3000"
                 logsCountPerPackage="4096"
                 logsBytesPerPackage="3145728"
@@ -18,7 +17,6 @@
                 timeFormat="yyyy-MM-dd'T'HH:mmZ"
                 timeZone="UTC"
                 ignoreExceptions="true">
-            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
         </Loghub>
     </Appenders>
     <Loggers>
