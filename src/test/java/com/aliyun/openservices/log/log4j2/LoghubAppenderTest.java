@@ -52,6 +52,6 @@ public class LoghubAppenderTest {
 
     @Test
     public void testLogLevelInfo() {
-        LOGGER.info("This is a test error message logged by log4j2, level is info,should not be logged.");
+        LOGGER.info("This is a test error message logged by log4j2, level is info, should not be logged.");
     }
 }
