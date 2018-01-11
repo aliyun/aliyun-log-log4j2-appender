@@ -2,11 +2,11 @@
 <Configuration status="WARN">
     <Appenders>
         <Loghub name="Loghub"
-                projectName="your project"
-                logstore="your logstore"
-                endpoint="your project endpoint"
-                accessKeyId="your accesskey id"
-                accessKey="your accesskey"
+                projectName="${env:projectName}"
+                logstore="${env:logstore}"
+                endpoint="${env:endpoint}"
+                accessKeyId="${env:accessKeyId}"
+                accessKey="${env:accessKey}"
                 packageTimeoutInMS="3000"
                 logsCountPerPackage="4096"
                 logsBytesPerPackage="3145728"
