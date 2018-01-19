@@ -122,7 +122,6 @@ public class LoghubAppender extends AbstractAppender {
         super.stop();
         if (producer != null) {
             producer.flush();
-            threadSleepInMills(this.packageTimeoutInMS * 2);
             producer.close();
         }
 

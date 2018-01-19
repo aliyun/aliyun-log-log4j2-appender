@@ -29,7 +29,7 @@ time: 2018-01-02T03:15+0000
 
 
 ## 版本支持
-* log-loghub-producer 0.1.8
+* log-loghub-producer 0.1.10
 * protobuf-java 2.5.0
 
 > 该版本主要适配于Log4J 2.X以上版本，以下版本请参考[aliyun-log-log4j-appender](https://github.com/aliyun/aliyun-log-log4j-appender)
@@ -48,7 +48,7 @@ time: 2018-01-02T03:15+0000
 <dependency>
     <groupId>com.aliyun.openservices</groupId>
     <artifactId>aliyun-log-log4j2-appender</artifactId>
-    <version>0.1.2</version>
+    <version>0.1.3</version>
 </dependency>
 ```
 
