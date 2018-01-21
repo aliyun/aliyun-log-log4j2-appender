@@ -123,7 +123,7 @@ topic = [your topic]
 timeFormat = yyyy-MM-dd'T'HH:mmZ
 timeZone  UTC
 ```
-参阅：https://help.aliyun.com/document_detail/43758.html
+参阅：https://github.com/aliyun/aliyun-log-producer-java
 
 ## 使用实例
 项目中提供了一个名为`com.aliyun.openservices.log.log4j2.Log4j2AppenderExample`的实例，它会加载resources目录下的`log4j2.xml`文件进行log4j2配置。
