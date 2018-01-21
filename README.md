@@ -35,7 +35,8 @@ Field Specifications:
 * log-loghub-producer 0.1.10
 * protobuf-java 2.5.0
 
-> This version is mainly suitable for Log4J 2.X versions. For Log4j 1.x, please refer to [aliyun-log-log4j-appender](https://github.com/aliyun/aliyun-log-log4j-appender)
+> This version is mainly suitable for Log4j 2.X versions. For Log4j 1.x, please refer to
+[aliyun-log-log4j-appender](https://github.com/aliyun/aliyun-log-log4j-appender)
 
 
 ## Configuration Steps
@@ -59,31 +60,31 @@ Field Specifications:
 
 Take `log4j2.xml` as an example, you can configure the appender and logger related to AliCloud Log Services as follows:
 ```
-	<Appenders>
-    	<Loghub name="Loghub"
-                projectName="your project"
-                logstore="your logstore"
-                endpoint="your project endpoint"
-                accessKeyId="your accesskey id"
-                accessKey="your accesskey"
-                packageTimeoutInMS="3000"
-                logsCountPerPackage="4096"
-                logsBytesPerPackage="3145728"
-                memPoolSizeInByte="104857600"
-                retryTimes="3"
-                maxIOThreadSizeInPool="8"
-                topic="your topic"
-                timeFormat="yyyy-MM-dd'T'HH:mmZ"
-                timeZone="UTC"
-                ignoreExceptions="true">
-        	<PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
-		</Loghub>
-	</Appenders>
-	<Loggers>
-		<Root level="warn">
-       		<AppenderRef ref="Loghub"/>
-    	</Root>
-	</Loggers>
+<Appenders>
+    <Loghub name="Loghub"
+            projectName="your project"
+            logstore="your logstore"
+            endpoint="your project endpoint"
+            accessKeyId="your accesskey id"
+            accessKey="your accesskey"
+            packageTimeoutInMS="3000"
+            logsCountPerPackage="4096"
+            logsBytesPerPackage="3145728"
+            memPoolSizeInByte="104857600"
+            retryTimes="3"
+            maxIOThreadSizeInPool="8"
+            topic="your topic"
+            timeFormat="yyyy-MM-dd'T'HH:mmZ"
+            timeZone="UTC"
+            ignoreExceptions="true">
+        <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+    </Loghub>
+</Appenders>
+<Loggers>
+    <Root level="warn">
+        <AppenderRef ref="Loghub"/>
+    </Root>
+</Loggers>
 ```
 
 ## Parameter Description
