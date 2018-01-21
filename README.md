@@ -35,7 +35,7 @@ Field Specifications:
 * log-loghub-producer 0.1.10
 * protobuf-java 2.5.0
 
-> This version is mainly suitable for Log4J 2.X versions. For Log4j 1.x, please refer to [aliyun-log-log4j-appender](https://github.com/aliyun/aliyun-log-log4j-appender
+> This version is mainly suitable for Log4J 2.X versions. For Log4j 1.x, please refer to [aliyun-log-log4j-appender](https://github.com/aliyun/aliyun-log-log4j-appender)
 
 
 ## Configuration Steps
