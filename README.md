@@ -112,7 +112,7 @@ logsBytesPerPackage = 5242880
 memPoolSizeInByte = 1048576000
 # Specify the I/O thread pool's maximum pool size, the main function of the I/O thread pool is to send data, default is 8, optional
 maxIOThreadSizeInPool = 8
-# Specify the retry times when failing to send data, if exceeds this value, the appender will record the failure message to BasicStatusManager, default is 3, optional
+# Specify the retry times when failing to send data, if exceeds this value, the appender will record the failure message through it's StatusLogger, default is 3, optional
 retryTimes = 3
 
 # Specify the topic of your log
