@@ -1,6 +1,7 @@
 # Log4j2 Appender
 
 [![Build Status](https://travis-ci.org/aliyun/aliyun-log-log4j2-appender.svg?branch=master)](https://travis-ci.org/aliyun/aliyun-log-log4j2-appender)
+[![License](https://img.shields.io/badge/license-Apache2.0-blue.svg)](/LICENSE)
 
 [README in English](/README.md)
 
