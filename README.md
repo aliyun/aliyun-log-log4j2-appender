@@ -78,7 +78,6 @@ Take `log4j2.xml` as an example, you can configure the appender and logger relat
             timeFormat="yyyy-MM-dd'T'HH:mmZ"
             timeZone="UTC"
             ignoreExceptions="true">
-        <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
     </Loghub>
 </Appenders>
 <Loggers>

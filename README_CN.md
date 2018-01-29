@@ -76,7 +76,6 @@ time: 2018-01-02T03:15+0000
                 timeFormat="yyyy-MM-dd'T'HH:mmZ"
                 timeZone="UTC"
                 ignoreExceptions="true">
-            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
         </Loghub>
     </Appenders>
     <Loggers>
