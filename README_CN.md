@@ -6,9 +6,9 @@
 [README in English](/README.md)
 
 ## Aliyun Log Log4j2 Appender
-Log4j2是log4j的升级版本。通过使用Log4j2，您可以控制日志信息输送的目的地是控制台、文件、GUI 组件、甚至是套接口服务器、NT 的事件记录器、UNIX Syslog 守护进程等；您也可以控制每一条日志的输出格式；通过定义每一条日志信息的级别，您能够更加细致地控制日志的生成过程。最令人感兴趣的就是，这些可以通过一个配置文件来灵活地进行配置，而不需要修改应用的代码。
+Log4j2 是 log4j 的升级版本。通过使用 Log4j2，您可以控制日志信息输送的目的地是控制台、文件、GUI 组件、甚至是套接口服务器、NT 的事件记录器、UNIX Syslog 守护进程等；您也可以控制每一条日志的输出格式；通过定义每一条日志信息的级别，您能够更加细致地控制日志的生成过程。最令人感兴趣的就是，这些可以通过一个配置文件来灵活地进行配置，而不需要修改应用的代码。
 
-通过Aliyun Log Log4j2 Appender，您可以控制日志的输出目的地为阿里云日志服务。需要注意的是，Aliyun Log Log4j2 Appender不支持设置日志的输出格式，写到日志服务中的日志的样式如下：
+通过 Aliyun Log Log4j2 Appender，您可以控制日志的输出目的地为阿里云日志服务。需要注意的是，Aliyun Log Log4j2 Appender 不支持设置日志的输出格式，写到日志服务中的日志的样式如下：
 ```
 level: ERROR
 location: com.aliyun.openservices.log.log4j2.example.Log4j2AppenderExample.main(Log4j2AppenderExample.java:16)
@@ -26,7 +26,7 @@ time: 2018-01-02T03:15+0000
 
 ## 功能优势
 + 日志不落盘：产生数据实时通过网络发给服务端。
-+ 无需改造：对已使用Log4j2应用，只需简单配置即可采集。
++ 无需改造：对已使用 Log4j2 应用，只需简单配置即可采集。
 + 异步高吞吐：高并发设计，后台异步发送，适合高并发写入。
 + 上下文查询：服务端除了通过关键词检索外，给定日志能够精确还原原始日志文件上下文日志信息。
 
@@ -57,7 +57,7 @@ time: 2018-01-02T03:15+0000
 
 ### 2. 修改配置文件
 
-以xml型配置文件`log4j2.xml`为例（不存在则在项目根目录创建），配置Loghub相关的appender与 Logger，例如：
+以xml型配置文件`log4j2.xml`为例（不存在则在项目根目录创建），配置 Loghub 相关的 appender 与 Logger，例如：
 ```
     <Appenders>
         <Loghub name="Loghub"
@@ -126,7 +126,7 @@ timeZone  UTC
 参阅：https://github.com/aliyun/aliyun-log-producer-java
 
 ## 使用实例
-项目中提供了一个名为`com.aliyun.openservices.log.log4j2.Log4j2AppenderExample`的实例，它会加载resources目录下的`log4j2.xml`文件进行log4j2配置。
+项目中提供了一个名为`com.aliyun.openservices.log.log4j2.Log4j2AppenderExample`的实例，它会加载 resources 目录下的`log4j2.xml`文件进行log4j2配置。
 
 **log4j2.xml样例说明**
 + 配置了三个appender：loghubAppender1、loghubAppender2、STDOUT。
@@ -137,6 +137,10 @@ timeZone  UTC
 [Log4j2AppenderExample.java](/src/main/java/com/aliyun/openservices/log/log4j2/example/Log4j2AppenderExample.java)
 
 [log4j2.xml](/src/main/resources/log4j2.xml)
+
+## 错误诊断
+
+Aliyun Log Log4j2 Appender 会将 appender 运行过程中产生的异常通过 `org.apache.logging.log4j.status.StatusLogger` 记录下来，默认情况下 log4j2 框架会为 StatusLogger 注册一个 StatusConsoleListener，因此 Aliyun Log Log4j2 Appender 自己运行过程中产生的异常会在默认情况下会输出到控制台。如果您在使用过程中遇到了问题，请关注下控制台的错误输出。
 
 ## 贡献者
 [@LNAmp](https://github.com/LNAmp) [@zzboy](https://github.com/zzboy) 对项目作了很大贡献。
