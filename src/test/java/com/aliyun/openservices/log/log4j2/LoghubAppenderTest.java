@@ -11,6 +11,7 @@ import org.junit.Test;
 
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
 public class LoghubAppenderTest {
@@ -53,5 +54,11 @@ public class LoghubAppenderTest {
     @Test
     public void testLogLevelInfo() {
         LOGGER.info("This is a test error message logged by log4j2, level is info, should not be logged.");
+    }
+
+    @Test
+    public void testParseStrToInt() {
+        int val = LoghubAppender.parseStrToInt("123", 10);
+        assertEquals(123, val);
     }
 }

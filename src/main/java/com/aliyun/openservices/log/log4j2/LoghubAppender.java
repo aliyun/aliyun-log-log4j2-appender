@@ -244,7 +244,7 @@ public class LoghubAppender extends AbstractAppender {
     }
 
     static int parseStrToInt(String str, final int defaultVal) {
-        if (isStrEmpty(str)) {
+        if (!isStrEmpty(str)) {
             try {
                 return Integer.valueOf(str);
             } catch (NumberFormatException e) {
