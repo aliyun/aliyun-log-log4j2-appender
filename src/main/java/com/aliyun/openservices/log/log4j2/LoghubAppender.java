@@ -112,6 +112,7 @@ public class LoghubAppender extends AbstractAppender {
         producerConfig.memPoolSizeInByte = this.memPoolSizeInByte;
         producerConfig.retryTimes = this.retryTimes;
         producerConfig.maxIOThreadSizeInPool = this.maxIOThreadSizeInPool;
+        producerConfig.userAgent = "log4j2";
 
         producer = new LogProducer(producerConfig);
         producer.setProjectConfig(projectConfig);
