@@ -144,6 +144,12 @@ timeZone  UTC
 * 检查您项目中引入的 protobuf-java，aliyun-log-log4j2-appender 这两个 jar 包的版本是否和文档中`maven 工程中引入依赖`部分列出的 jar 包版本一致。
 * 通过观察控制台的输出来诊断您的问题。Aliyun Log Log4j2 Appender 会将 appender 运行过程中产生的异常通过 `org.apache.logging.log4j.status.StatusLogger` 记录下来，默认情况下 log4j2 框架会为 StatusLogger 注册一个 StatusConsoleListener，因此 Aliyun Log Log4j2 Appender 自己运行过程中产生的异常会在默认情况下会输出到控制台。
 
+## 常见问题
+
+**Q**：用户可以自定义 source 字段的取值吗？
+
+**A**：目前不支持。source 字段会被设置成应用程序所在宿主机的 IP。
+
 ## 贡献者
 [@LNAmp](https://github.com/LNAmp) [@zzboy](https://github.com/zzboy) 对项目作了很大贡献。
 
