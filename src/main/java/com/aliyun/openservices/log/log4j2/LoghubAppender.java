@@ -45,7 +45,8 @@ public class LoghubAppender extends AbstractAppender {
     protected final DateFormat dateFormat;
 
     private LogProducer producer;
-    private String topic = "";
+    private String topic;
+    private String source;
 
     private static final String DEFAULT_TIME_FORMAT_STR = "yyyy-MM-dd'T'HH:mmZ";
 
@@ -75,6 +76,7 @@ public class LoghubAppender extends AbstractAppender {
                              int retryTimes,
                              int maxIOThreadSizeInPool,
                              String topic,
+                             String source,
                              DateFormat dateFormat
     ) {
         super(name, filter, layout, ignoreExceptions);
@@ -91,6 +93,7 @@ public class LoghubAppender extends AbstractAppender {
         this.retryTimes = retryTimes;
         this.maxIOThreadSizeInPool = maxIOThreadSizeInPool;
         this.topic = topic;
+        this.source = source;
         this.dateFormat = dateFormat;
     }
 
@@ -164,8 +167,8 @@ public class LoghubAppender extends AbstractAppender {
                 item.PushBack(keys[i].toString(), properties.get(keys[i].toString()));
             }
         }
-        producer.send(this.projectName, this.logstore, this.topic, null, logItems, new LoghubAppenderCallback(LOGGER,
-                this.projectName, this.logstore, this.topic, null, logItems));
+        producer.send(this.projectName, this.logstore, this.topic, this.source, logItems, new LoghubAppenderCallback(LOGGER,
+                this.projectName, this.logstore, this.topic, this.source, logItems));
     }
 
     @PluginFactory
@@ -188,6 +191,7 @@ public class LoghubAppender extends AbstractAppender {
             @PluginAttribute("retryTimes") final String retryTimes, //int
             @PluginAttribute("maxIOThreadSizeInPool") final String maxIOThreadSizeInPool, //int
             @PluginAttribute("topic") final String topic,
+            @PluginAttribute("source") final String source,
             @PluginAttribute("timeFormat") final String timeFormat,
             @PluginAttribute("timeZone") final String timeZone) {
 
@@ -229,7 +233,7 @@ public class LoghubAppender extends AbstractAppender {
 
         return new LoghubAppender(name, filter, layout, ignoreExceptions, projectName, logstore, endpoint,
                 accessKeyId, accessKey, stsToken, packageTimeoutInMSInt, logsCountPerPackageInt, logsBytesPerPackageInt,
-                memPoolSizeInByteInt, retryTimesInt, maxIOThreadSizeInPoolInt, topic, tmpDateFormat);
+                memPoolSizeInByteInt, retryTimesInt, maxIOThreadSizeInPoolInt, topic, source, tmpDateFormat);
     }
 
     static boolean isStrEmpty(String str) {

@@ -14,6 +14,7 @@
                 retryTimes="3"
                 maxIOThreadSizeInPool="8"
                 topic="your topic"
+                source="your source"
                 timeFormat="yyyy-MM-dd'T'HH:mmZ"
                 timeZone="UTC"
                 ignoreExceptions="true">
