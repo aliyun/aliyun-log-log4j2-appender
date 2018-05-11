@@ -16,6 +16,8 @@ location: com.aliyun.openservices.log.log4j2.example.Log4j2AppenderExample.main(
 message: error log
 thread: main
 time: 2018-01-02T03:15+0000
+__source__: xxx
+__topic__: yyy
 ```
 Field Specifications:
 + `level` stands for log level
@@ -23,7 +25,8 @@ Field Specifications:
 + `message` is the content of the log
 + `thread` stands for thread name
 + `time` is the log's generation time
-
++ `__source__` is the log's source, you can specify its value in conf file
++ `__topic__` is the log's topic, you can specify its value in conf file
 
 ## Advantage
 + `Disk Free`: the generation data will be send to AliCloud Log Service in real time through network.
@@ -53,7 +56,7 @@ Field Specifications:
 <dependency>
     <groupId>com.aliyun.openservices</groupId>
     <artifactId>aliyun-log-log4j2-appender</artifactId>
-    <version>0.1.6</version>
+    <version>0.1.7</version>
 </dependency>
 ```
 
@@ -75,6 +78,7 @@ Take `log4j2.xml` as an example, you can configure the appender and logger relat
             retryTimes="3"
             maxIOThreadSizeInPool="8"
             topic="your topic"
+            source="your source"
             timeFormat="yyyy-MM-dd'T'HH:mmZ"
             timeZone="UTC"
             ignoreExceptions="true">
@@ -116,6 +120,9 @@ retryTimes = 3
 
 # Specify the topic of your log
 topic = [your topic]
+
+# Specify the source of your log
+source = [your source]
 
 # Specify the time format of the data being sent to AliCloud Log Service, use SimpleDateFormat in Java to format time, default is ISO8601，optional
 timeFormat = yyyy-MM-dd'T'HH:mmZ
