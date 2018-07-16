@@ -9,13 +9,15 @@
 
 Apache Log4j2 is an upgrade to Log4j that provides significant improvements over its predecessor, Log4j 1.x. You can control the destination of the log through Log4j2. It can be console, file, GUI components, socket, NT event log, syslog. You can control the output format for each log as well. You can control the generation process of the log through log level. The most interesting thing is you can complete the above things through a configuration file and without any code modification.
 
-You can set the destination of your log to AliCloud Log Service through `Aliyun Log Log4j2 Appender`. But it is important to note that `Aliyun Log Log4j2 Appender` doesn't support cofigure log's output format. The format of the log in AliCloud Log Service is as follows:
+You can set the destination of your log to AliCloud Log Service through `Aliyun Log Log4j2 Appender`. The format of the log in AliCloud Log Service is as follows:
 ```
 level: ERROR
-location: com.aliyun.openservices.log.log4j2.example.Log4j2AppenderExample.main(Log4j2AppenderExample.java:18)
+location: com.aliyun.openservices.log.logback.example.LogbackAppenderExample.main(LogbackAppenderExample.java:18)
 message: error log
+throwable: java.lang.RuntimeException: xxx
 thread: main
 time: 2018-01-02T03:15+0000
+log: 2018-01-02 11:15:29,682 ERROR [main] com.aliyun.openservices.log.logback.example.LogbackAppenderExample: error log
 __source__: xxx
 __topic__: yyy
 ```
@@ -23,8 +25,10 @@ Field Specifications:
 + `level` stands for log level
 + `location` is logs's output position
 + `message` is the content of the log
++ `throwable` is exception of the log (this field will appear only if the exception is recorded)
 + `thread` stands for thread name
-+ `time` is the log's generation time
++ `time` is the log's generation time (you can configure it's format through timeFormat and timeZone)
++ `log` is custom log format (this field will appear only if you configure the encoder)
 + `__source__` is the log's source, you can specify its value in conf file
 + `__topic__` is the log's topic, you can specify its value in conf file
 
@@ -56,7 +60,7 @@ Field Specifications:
 <dependency>
     <groupId>com.aliyun.openservices</groupId>
     <artifactId>aliyun-log-log4j2-appender</artifactId>
-    <version>0.1.8</version>
+    <version>0.1.9</version>
 </dependency>
 ```
 
@@ -82,6 +86,7 @@ Take `log4j2.xml` as an example, you can configure the appender and logger relat
             timeFormat="yyyy-MM-dd'T'HH:mmZ"
             timeZone="UTC"
             ignoreExceptions="true">
+        <PatternLayout pattern="%d %-5level [%thread] %logger{0}: %msg"/>
     </Loghub>
 </Appenders>
 <Loggers>
@@ -124,9 +129,11 @@ topic = [your topic]
 # Specify the source of your log
 source = [your source]
 
-# Specify the time format of the data being sent to AliCloud Log Service, use SimpleDateFormat in Java to format time, default is ISO8601，optional
+# Specify time format of the field time, default is yyyy-MM-dd'T'HH:mmZ, optional
 timeFormat = yyyy-MM-dd'T'HH:mmZ
-timeZone  UTC
+
+# Specify timezone of the field time, default is UTC, optional
+timeZone = UTC
 ```
 
 
