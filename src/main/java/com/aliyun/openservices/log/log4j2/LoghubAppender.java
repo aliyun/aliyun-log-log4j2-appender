@@ -1,14 +1,10 @@
 package com.aliyun.openservices.log.log4j2;
 
 import java.io.Serializable;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 
 import com.aliyun.openservices.log.common.LogItem;
 import com.aliyun.openservices.log.producer.LogProducer;
@@ -26,9 +22,17 @@ import org.apache.logging.log4j.core.config.plugins.PluginElement;
 import org.apache.logging.log4j.core.config.plugins.PluginFactory;
 import org.apache.logging.log4j.core.util.Booleans;
 import org.apache.logging.log4j.core.util.Throwables;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 @Plugin(name = "Loghub", category = "Core", elementType = "appender", printObject = true)
 public class LoghubAppender extends AbstractAppender {
+
+    private static final String DEFAULT_TIME_FORMAT = "yyyy-MM-dd'T'HH:mmZ";
+
+    private static final String DEFAULT_TIME_ZONE = "UTC";
 
     protected String projectName;
     protected String logstore;
@@ -42,22 +46,12 @@ public class LoghubAppender extends AbstractAppender {
     protected int memPoolSizeInByte;
     protected int retryTimes;
     protected int maxIOThreadSizeInPool;
-    protected final DateFormat dateFormat;
 
     private LogProducer producer;
     private String topic;
     private String source;
 
-    private static final String DEFAULT_TIME_FORMAT_STR = "yyyy-MM-dd'T'HH:mmZ";
-
-    private static final String DEFAULT_TIME_ZONE = "UTC";
-
-    private static final DateFormat DEFAULT_TIME_FORMAT;
-
-    static {
-        DEFAULT_TIME_FORMAT = new SimpleDateFormat(DEFAULT_TIME_FORMAT_STR);
-        DEFAULT_TIME_FORMAT.setTimeZone(TimeZone.getTimeZone(DEFAULT_TIME_ZONE));
-    }
+    private DateTimeFormatter formatter;
 
     protected LoghubAppender(String name,
                              Filter filter,
@@ -77,7 +71,7 @@ public class LoghubAppender extends AbstractAppender {
                              int maxIOThreadSizeInPool,
                              String topic,
                              String source,
-                             DateFormat dateFormat
+                             DateTimeFormatter formatter
     ) {
         super(name, filter, layout, ignoreExceptions);
         this.projectName = projectName;
@@ -94,7 +88,7 @@ public class LoghubAppender extends AbstractAppender {
         this.maxIOThreadSizeInPool = maxIOThreadSizeInPool;
         this.topic = topic;
         this.source = source;
-        this.dateFormat = dateFormat;
+        this.formatter = formatter;
     }
 
     @Override
@@ -137,7 +131,8 @@ public class LoghubAppender extends AbstractAppender {
         LogItem item = new LogItem();
         logItems.add(item);
         item.SetTime((int) (event.getTimeMillis() / 1000));
-        item.PushBack("time", this.dateFormat.format(new Date(event.getTimeMillis())));
+        DateTime dateTime = new DateTime(event.getTimeMillis());
+        item.PushBack("time", dateTime.toString(formatter));
         item.PushBack("level", event.getLevel().toString());
         item.PushBack("thread", event.getThreadName());
 
@@ -223,17 +218,13 @@ public class LoghubAppender extends AbstractAppender {
         int maxIOThreadSizeInPoolInt = parseStrToInt(maxIOThreadSizeInPool, 8);
         checkCondition((maxIOThreadSizeInPoolInt > 0), "Config value [maxIOThreadSizeInPool] must > 0.");
 
-        DateFormat tmpDateFormat;
-        try {
-            tmpDateFormat = new SimpleDateFormat(isStrEmpty(timeFormat) ? DEFAULT_TIME_FORMAT_STR : timeFormat);
-            tmpDateFormat.setTimeZone(TimeZone.getTimeZone(isStrEmpty(timeZone) ? DEFAULT_TIME_ZONE : timeZone));
-        } catch (Exception e) {
-            tmpDateFormat = DEFAULT_TIME_FORMAT;
-        }
+        String pattern = isStrEmpty(timeFormat) ? DEFAULT_TIME_FORMAT : timeFormat;
+        String timeZoneInfo = isStrEmpty(timeZone) ? DEFAULT_TIME_ZONE : timeZone;
+        DateTimeFormatter formatter = DateTimeFormat.forPattern(pattern).withZone(DateTimeZone.forID(timeZoneInfo));
 
         return new LoghubAppender(name, filter, layout, ignoreExceptions, projectName, logstore, endpoint,
                 accessKeyId, accessKey, stsToken, packageTimeoutInMSInt, logsCountPerPackageInt, logsBytesPerPackageInt,
-                memPoolSizeInByteInt, retryTimesInt, maxIOThreadSizeInPoolInt, topic, source, tmpDateFormat);
+                memPoolSizeInByteInt, retryTimesInt, maxIOThreadSizeInPoolInt, topic, source, formatter);
     }
 
     static boolean isStrEmpty(String str) {
