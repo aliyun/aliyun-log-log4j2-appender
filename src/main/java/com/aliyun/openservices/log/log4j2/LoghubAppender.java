@@ -146,14 +146,13 @@ public class LoghubAppender extends AbstractAppender {
         item.PushBack("location", source == null ? "Unknown(Unknown Source)" : source.toString());
 
         String message = event.getMessage().getFormattedMessage();
-        Throwable throwable = event.getThrown();
+        item.PushBack("message", message);
+
+        String throwable = getThrowableStr(event.getThrown());
         if (throwable != null) {
-            for (String s : Throwables.toStringList(throwable)) {
-                message += System.getProperty("line.separator") + s;
-            }
+            item.PushBack("throwable", throwable);
         }
 
-        item.PushBack("message", message);
         Map<String, String> properties = event.getContextMap();
         if (properties.size() > 0) {
             Object[] keys = properties.keySet().toArray();
@@ -164,6 +163,23 @@ public class LoghubAppender extends AbstractAppender {
         }
         producer.send(this.projectName, this.logstore, this.topic, this.source, logItems, new LoghubAppenderCallback(LOGGER,
                 this.projectName, this.logstore, this.topic, this.source, logItems));
+    }
+
+    private String getThrowableStr(Throwable throwable) {
+        if (throwable == null) {
+            return null;
+        }
+        StringBuilder sb = new StringBuilder();
+        boolean isFirst = true;
+        for (String s : Throwables.toStringList(throwable)) {
+            if (isFirst) {
+                isFirst = false;
+            } else {
+                sb.append(System.getProperty("line.separator"));
+            }
+            sb.append(s);
+        }
+        return sb.toString();
     }
 
     @PluginFactory
@@ -229,14 +245,6 @@ public class LoghubAppender extends AbstractAppender {
 
     static boolean isStrEmpty(String str) {
         return str == null || str.length() == 0;
-    }
-
-    static void threadSleepInMills(long timeInMills) {
-        try {
-            Thread.sleep(timeInMills);
-        } catch (Throwable e) {
-            //ignore
-        }
     }
 
     static int parseStrToInt(String str, final int defaultVal) {
