@@ -30,7 +30,7 @@ import org.joda.time.format.DateTimeFormatter;
 @Plugin(name = "Loghub", category = "Core", elementType = "appender", printObject = true)
 public class LoghubAppender extends AbstractAppender {
 
-    private static final String DEFAULT_TIME_FORMAT = "yyyy-MM-dd'T'HH:mmZ";
+    private static final String DEFAULT_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ";
 
     private static final String DEFAULT_TIME_ZONE = "UTC";
 
@@ -151,6 +151,10 @@ public class LoghubAppender extends AbstractAppender {
         String throwable = getThrowableStr(event.getThrown());
         if (throwable != null) {
             item.PushBack("throwable", throwable);
+        }
+
+        if (getLayout() != null) {
+            item.PushBack("log", new String(getLayout().toByteArray(event)));
         }
 
         Map<String, String> properties = event.getContextMap();
