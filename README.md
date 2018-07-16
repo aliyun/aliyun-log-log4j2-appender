@@ -129,8 +129,8 @@ topic = [your topic]
 # Specify the source of your log
 source = [your source]
 
-# Specify time format of the field time, default is yyyy-MM-dd'T'HH:mmZ, optional
-timeFormat = yyyy-MM-dd'T'HH:mmZ
+# Specify time format of the field time, default is yyyy-MM-dd'T'HH:mm:ssZ, optional
+timeFormat = yyyy-MM-dd'T'HH:mm:ssZ
 
 # Specify timezone of the field time, default is UTC, optional
 timeZone = UTC
