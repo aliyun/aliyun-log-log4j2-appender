@@ -154,9 +154,30 @@ timeZone  UTC
 
 ## 常见问题
 
+**Q**: 如何采集宿主机 IP？
+
+**A**: 不要在 log4j2.xml 中设置 source 字段的值，这种情况下 source 字段会被设置成应用程序所在宿主机的 IP。
+
 **Q**：用户可以自定义 source 字段的取值吗？
 
 **A**：0.1.6 以及之前的版本不支持，在这些版本中 source 字段会被设置成应用程序所在宿主机的 IP。在最新的版本中，您可以参考上面的配置文件指定 source 的取值。
+
+**Q**：在网络发生异常的情况下，`aliyun-log-log4j2-appender` 会如何处理待发送的日志？
+
+**A**：`aliyun-log-log4j2-appender` 底层使用 `aliyun-log-producer-java` 发送数据。producer 会根据您在配置文件中设置的 `retryTimes` 进行重试，如果超过 `retryTimes` 次数据仍没有发送成功，会将错误信息输出，并丢弃该条日志。关于如何查看错误输出，可以参考错误诊断部分。
+
+**Q**：如何关闭某些类输出的日志？
+
+**A**：通过在 log4j2.xml 文件中添加 `<Logger name="packname" level="OFF"/>` 可屏蔽相应包下日志的输出。
+例如，当您在 log4j2.xml 文件中添加如下内容会屏蔽 package 名为 `com.aliyun.openservices.log.producer.inner` 下所有类的日志输出。
+```
+ <Loggers>
+    <Root level="DEBUG">
+        <AppenderRef ref="Loghub"/>
+    </Root>
+    <Logger name="com.aliyun.openservices.log.producer.inner" level="OFF"/>
+</Loggers>
+```
 
 ## 贡献者
 [@LNAmp](https://github.com/LNAmp) [@zzboy](https://github.com/zzboy) 对项目作了很大贡献。
