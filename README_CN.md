@@ -67,32 +67,32 @@ __topic__: yyy
 
 以xml型配置文件`log4j2.xml`为例（不存在则在项目根目录创建），配置 Loghub 相关的 appender 与 Logger，例如：
 ```
-    <Appenders>
-        <Loghub name="Loghub"
-                projectName="your project"
-                logstore="your logstore"
-                endpoint="your project endpoint"
-                accessKeyId="your accesskey id"
-                accessKey="your accesskey"
-                packageTimeoutInMS="3000"
-                logsCountPerPackage="4096"
-                logsBytesPerPackage="3145728"
-                memPoolSizeInByte="104857600"
-                retryTimes="3"
-                maxIOThreadSizeInPool="8"
-                topic="your topic"
-                source="your source"
-                timeFormat="yyyy-MM-dd'T'HH:mmZ"
-                timeZone="UTC"
-                ignoreExceptions="true">
-            <PatternLayout pattern="%d %-5level [%thread] %logger{0}: %msg"/>
-        </Loghub>
-    </Appenders>
-    <Loggers>
-        <Root level="warn">
-            <AppenderRef ref="Loghub"/>
-        </Root>
-    </Loggers>
+<Appenders>
+    <Loghub name="Loghub"
+            projectName="your project"
+            logstore="your logstore"
+            endpoint="your project endpoint"
+            accessKeyId="your accesskey id"
+            accessKey="your accesskey"
+            packageTimeoutInMS="3000"
+            logsCountPerPackage="4096"
+            logsBytesPerPackage="3145728"
+            memPoolSizeInByte="104857600"
+            retryTimes="3"
+            maxIOThreadSizeInPool="8"
+            topic="your topic"
+            source="your source"
+            timeFormat="yyyy-MM-dd'T'HH:mmZ"
+            timeZone="UTC"
+            ignoreExceptions="true">
+        <PatternLayout pattern="%d %-5level [%thread] %logger{0}: %msg"/>
+    </Loghub>
+</Appenders>
+<Loggers>
+    <Root level="warn">
+        <AppenderRef ref="Loghub"/>
+    </Root>
+</Loggers>
 ```
 其中：
 level 是日志记录的优先级，优先级从高到低分别是 ERROR、WARN、INFO、DEBUG。通过在这里定义的级别，您可以控制应用程序中相应级别的日志信息的开关。比如在这里定义了 WARN 级别，则应用程序中所有 INFO、DEBUG
