@@ -13,8 +13,10 @@ Log4j2 是 log4j 的升级版本。通过使用 Log4j2，您可以控制日志�
 level: ERROR
 location: com.aliyun.openservices.log.log4j2.example.Log4j2AppenderExample.main(Log4j2AppenderExample.java:16)
 message: error log
+throwable: java.lang.RuntimeException: xxx
 thread: main
 time: 2018-01-02T03:15+0000
+log: 2018-01-02 11:15:29,682 ERROR [main] com.aliyun.openservices.log.log4j2.example.Log4j2AppenderExample: error log
 __source__: xxx
 __topic__: yyy
 ```
@@ -22,8 +24,10 @@ __topic__: yyy
 + level 日志级别。
 + location 日志打印语句的代码位置。
 + message 日志内容。
++ throwable 日志异常信息（只有记录了异常信息，这个字段才会出现）。
 + thread 线程名称。
-+ time 日志打印时间。
++ time 日志打印时间（可以通过 timeFormat 或 timeZone 配置 time 字段呈现的格式和时区）。
++ log 自定义日志格式（只有设置了 encoder，这个字段才会出现）。
 + \_\_source\_\_ 日志来源，用户可在配置文件中指定。
 + \_\_topic\_\_ 日志主题，用户可在配置文件中指定。
 
@@ -36,7 +40,7 @@ __topic__: yyy
 
 
 ## 版本支持
-* log-loghub-producer 0.1.10
+* log-loghub-producer 0.1.13
 * protobuf-java 2.5.0
 
 > 该版本主要适配于Log4J 2.X以上版本，以下版本请参考[aliyun-log-log4j-appender](https://github.com/aliyun/aliyun-log-log4j-appender)
@@ -55,7 +59,7 @@ __topic__: yyy
 <dependency>
     <groupId>com.aliyun.openservices</groupId>
     <artifactId>aliyun-log-log4j2-appender</artifactId>
-    <version>0.1.8</version>
+    <version>0.1.9</version>
 </dependency>
 ```
 
@@ -81,6 +85,7 @@ __topic__: yyy
                 timeFormat="yyyy-MM-dd'T'HH:mmZ"
                 timeZone="UTC"
                 ignoreExceptions="true">
+            <PatternLayout pattern="%d %-5level [%thread] %logger{0}: %msg"/>
         </Loghub>
     </Appenders>
     <Loggers>
@@ -121,15 +126,17 @@ maxIOThreadSizeInPool = 8
 #指定发送失败时重试的次数，如果超过该值，会把失败信息记录到log4j2的StatusLogger里，默认是3，可选参数
 retryTimes = 3
 
-#指定日志主题
+#指定日志主题，可选参数
 topic = [your topic]
 
-#指的日志来源
+#指的日志来源，可选参数
 source = [your source]
 
-#输出到日志服务的时间格式，使用 Java 中 SimpleDateFormat 格式化时间，默认是 ISO8601，可选参数
-timeFormat = yyyy-MM-dd'T'HH:mmZ
-timeZone  UTC
+#输出到日志服务的时间的格式，默认是 yyyy-MM-dd'T'HH:mm:ssZ，可选参数
+timeFormat = yyyy-MM-dd'T'HH:mm:ssZ
+
+#输出到日志服务的时间的时区，默认是 UTC，可选参数
+timeZone = UTC
 ```
 参阅：https://github.com/aliyun/aliyun-log-producer-java
 
@@ -153,6 +160,17 @@ timeZone  UTC
 * 通过观察控制台的输出来诊断您的问题。Aliyun Log Log4j2 Appender 会将 appender 运行过程中产生的异常通过 `org.apache.logging.log4j.status.StatusLogger` 记录下来，默认情况下 log4j2 框架会为 StatusLogger 注册一个 StatusConsoleListener，因此 Aliyun Log Log4j2 Appender 自己运行过程中产生的异常会在默认情况下会输出到控制台。
 
 ## 常见问题
+
+**Q**：是否支持自定义 log 格式？
+
+**A**：在 0.1.9 及以上版本新增了 log 字段。您可以通过配置 layout 来自定义 log 格式，例如：
+```
+<PatternLayout pattern="%d %-5level [%thread] %logger{0}: %msg"/>
+```
+log 输出样例：
+```
+log:  2018-07-15 21:12:29,682 INFO [main] TestAppender: info message.
+```
 
 **Q**: 如何采集宿主机 IP？
 
