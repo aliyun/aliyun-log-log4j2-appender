@@ -86,7 +86,11 @@ public class LoghubAppender extends AbstractAppender {
         this.memPoolSizeInByte = memPoolSizeInByte;
         this.retryTimes = retryTimes;
         this.maxIOThreadSizeInPool = maxIOThreadSizeInPool;
-        this.topic = topic;
+        if (topic == null) {
+            this.topic = "";
+        } else {
+            this.topic = topic;
+        }
         this.source = source;
         this.formatter = formatter;
     }
