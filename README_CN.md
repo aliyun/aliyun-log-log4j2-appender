@@ -126,10 +126,10 @@ maxIOThreadSizeInPool = 8
 #指定发送失败时重试的次数，如果超过该值，会把失败信息记录到log4j2的StatusLogger里，默认是3，可选参数
 retryTimes = 3
 
-#指定日志主题，可选参数
+#指定日志主题，默认为 ""，可选参数
 topic = [your topic]
 
-#指的日志来源，可选参数
+#指的日志来源，默认为应用程序所在宿主机的 IP，可选参数
 source = [your source]
 
 #输出到日志服务的时间的格式，默认是 yyyy-MM-dd'T'HH:mm:ssZ，可选参数
@@ -156,8 +156,9 @@ timeZone = UTC
 ## 错误诊断
 
 如果您发现数据没有写入日志服务，可通过如下步骤进行错误诊断。
-* 检查您项目中引入的 protobuf-java，aliyun-log-log4j2-appender 这两个 jar 包的版本是否和文档中`maven 工程中引入依赖`部分列出的 jar 包版本一致。
-* 通过观察控制台的输出来诊断您的问题。Aliyun Log Log4j2 Appender 会将 appender 运行过程中产生的异常通过 `org.apache.logging.log4j.status.StatusLogger` 记录下来，默认情况下 log4j2 框架会为 StatusLogger 注册一个 StatusConsoleListener，因此 Aliyun Log Log4j2 Appender 自己运行过程中产生的异常会在默认情况下会输出到控制台。
+1. 检查配置文件 log4j2.xml 是否限定了 appender 只输出特定级别的日志。比如，是否设置了 root，logger 或 appender 的 level 属性，是否在 appender 中设使用了 [filter](https://logging.apache.org/log4j/2.0/manual/filters.html)。
+2. 检查您项目中引入的 protobuf-java，aliyun-log-log4j2-appender 这两个 jar 包的版本是否和文档中`maven 工程中引入依赖`部分列出的 jar 包版本一致。
+3. 通过观察控制台的输出来诊断您的问题。Aliyun Log Log4j2 Appender 会将 appender 运行过程中产生的异常通过 `org.apache.logging.log4j.status.StatusLogger` 记录下来，默认情况下 log4j2 框架会为 StatusLogger 注册一个 StatusConsoleListener，因此 Aliyun Log Log4j2 Appender 自己运行过程中产生的异常会在默认情况下会输出到控制台。
 
 ## 常见问题
 
