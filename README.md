@@ -113,19 +113,24 @@ endpoint = [your project endpoint]
 accessKeyId = [your accesskey id]
 accessKeySecret = [your accessKeySecret]
 
-# Specify the timeout for sending package, in milliseconds, default is 3000, the lower bound is 10, optional
-packageTimeoutInMS = 3000
-# Specify the maximum log count per package, the upper limit is 4096, optional
-logsCountPerPackage = 4096
-# Specify the maximum cache size per package, the upper limit is 3MB, in bytes, optional
-logsBytesPerPackage = 3145728
-# The upper limit of the memory that can be used by appender, in bytes, default is 100MB, optional
-memPoolSizeInByte = 1048576000
-# Specify the I/O thread pool's maximum pool size, the main function of the I/O thread pool is to send data, default is 8, optional
-maxIOThreadSizeInPool = 8
-
-# Specify the retry times when failing to send data, if exceeds this value, the appender will record the failure message through it's StatusLogger, default is 3, optional
-retries = 3
+# The upper limit log size that a single producer instance can hold, default is 100MB.
+totalSizeInBytes=104857600
+# If the producer has insufficient free space, the caller's maximum blocking time on the send method, defaults is 60 seconds.
+maxBlockMs=60
+# The thread pool size for executing log sending tasks, defaults is the number of processors available.
+ioThreadCount=8
+# When the size of the cached log in a Producer Batch is greater than or equal batchSizeThresholdInBytes, the batch will be send, default is 512KB, maximum can be set to 5MB.
+batchSizeThresholdInBytes=524288
+# When the number of log entries cached in a ProducerBatch is greater than or equal to batchCountThreshold, the batch will be send.
+batchCountThreshold=4096
+# A ProducerBatch has a residence time from creation to sending, defaulting is 2 seconds and a minimum of 100 milliseconds.
+lingerMs=2000
+# The number of times a Producer Batch can be retried if it fails to send for the first time, default is 10.
+retries=10
+# The backoff time for the first retry, default 100 milliseconds.
+baseRetryBackoffMs=100
+# The maximum backoff time for retries, default is 50 seconds.
+maxRetryBackoffMs=100
 
 # Specify the topic of your log, default is "", optional
 topic = [your topic]
