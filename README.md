@@ -40,7 +40,7 @@ Field Specifications:
 
 
 ## Supported Version
-* log-loghub-producer 0.1.10
+* aliyun-log-producer 0.2.0
 * protobuf-java 2.5.0
 
 > This version is mainly suitable for Log4j 2.X versions. For Log4j 1.x, please refer to
@@ -70,17 +70,20 @@ Take `log4j2.xml` as an example, you can configure the appender and logger relat
 ```
 <Appenders>
     <Loghub name="Loghub"
-            projectName="your project"
-            logstore="your logstore"
+            project="your project"
+            logStore="your logStore"
             endpoint="your project endpoint"
-            accessKeyId="your accesskey id"
-            accessKey="your accesskey"
-            packageTimeoutInMS="3000"
-            logsCountPerPackage="4096"
-            logsBytesPerPackage="3145728"
-            memPoolSizeInByte="104857600"
-            retryTimes="3"
-            maxIOThreadSizeInPool="8"
+            accessKeyId="your accessKey id"
+            accessKeySecret="your accessKey secret"
+            totalSizeInBytes="104857600"
+            maxBlockMs="60000"
+            ioThreadCount="8"
+            batchSizeThresholdInBytes="524288"
+            batchCountThreshold="4096"
+            lingerMs="2000"
+            retries="10"
+            baseRetryBackoffMs="100"
+            maxRetryBackoffMs="100"
             topic="your topic"
             source="your source"
             timeFormat="yyyy-MM-dd'T'HH:mmZ"
@@ -101,14 +104,14 @@ Take `log4j2.xml` as an example, you can configure the appender and logger relat
 The `Aliyun Log Log4j2 Appender` provides the following parameters.
 ```
 # Specify the project name of your log services, required
-projectName = [your project]
+project = [your project]
 # Specify the logstore of your log services, required
-logstore = [your logstore]
+logStore = [your logStore]
 # Specify the HTTP endpoint of your log services, required
 endpoint = [your project endpoint]
 # Specify the account information of your log services, required
 accessKeyId = [your accesskey id]
-accessKey = [your accesskey]
+accessKeySecret = [your accessKeySecret]
 
 # Specify the timeout for sending package, in milliseconds, default is 3000, the lower bound is 10, optional
 packageTimeoutInMS = 3000
@@ -120,8 +123,9 @@ logsBytesPerPackage = 3145728
 memPoolSizeInByte = 1048576000
 # Specify the I/O thread pool's maximum pool size, the main function of the I/O thread pool is to send data, default is 8, optional
 maxIOThreadSizeInPool = 8
+
 # Specify the retry times when failing to send data, if exceeds this value, the appender will record the failure message through it's StatusLogger, default is 3, optional
-retryTimes = 3
+retries = 3
 
 # Specify the topic of your log, default is "", optional
 topic = [your topic]

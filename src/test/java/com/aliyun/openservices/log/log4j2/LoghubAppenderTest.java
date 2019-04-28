@@ -1,6 +1,7 @@
 package com.aliyun.openservices.log.log4j2;
 
-import com.aliyun.openservices.log.producer.ProducerConfig;
+import com.aliyun.openservices.aliyun.log.producer.ProducerConfig;
+import com.aliyun.openservices.aliyun.log.producer.ProjectConfigs;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,9 +20,9 @@ public class LoghubAppenderTest {
     private static final Logger LOGGER = LogManager.getLogger(LoghubAppenderTest.class);
 
     private static void sleep() {
-        ProducerConfig producerConfig = new ProducerConfig();
+        ProducerConfig producerConfig = new ProducerConfig(new ProjectConfigs());
         try {
-            Thread.sleep(2 * producerConfig.packageTimeoutInMS);
+            Thread.sleep(2 * producerConfig.getLingerMs());
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

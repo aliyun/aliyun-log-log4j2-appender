@@ -6,10 +6,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import com.aliyun.openservices.aliyun.log.producer.LogProducer;
+import com.aliyun.openservices.aliyun.log.producer.Producer;
+import com.aliyun.openservices.aliyun.log.producer.ProducerConfig;
+import com.aliyun.openservices.aliyun.log.producer.ProjectConfig;
+import com.aliyun.openservices.aliyun.log.producer.ProjectConfigs;
 import com.aliyun.openservices.log.common.LogItem;
-import com.aliyun.openservices.log.producer.LogProducer;
-import com.aliyun.openservices.log.producer.ProducerConfig;
-import com.aliyun.openservices.log.producer.ProjectConfig;
 import org.apache.logging.log4j.core.Filter;
 import org.apache.logging.log4j.core.Layout;
 import org.apache.logging.log4j.core.LogEvent;
@@ -34,22 +36,28 @@ public class LoghubAppender extends AbstractAppender {
 
     private static final String DEFAULT_TIME_ZONE = "UTC";
 
-    protected String projectName;
-    protected String logstore;
+    protected String project;
+    protected String logStore;
     protected String endpoint;
     protected String accessKeyId;
-    protected String accessKey;
+    protected String accessKeySecret;
     protected String stsToken;
-    protected int packageTimeoutInMS;
-    protected int logsCountPerPackage;
-    protected int logsBytesPerPackage;
-    protected int memPoolSizeInByte;
-    protected int retryTimes;
-    protected int maxIOThreadSizeInPool;
 
-    private LogProducer producer;
+    protected int totalSizeInBytes;
+    protected int maxBlockMs;
+    protected int ioThreadCount;
+    protected int batchSizeThresholdInBytes;
+    protected int batchCountThreshold;
+    protected int lingerMs;
+    protected int retries;
+    protected int baseRetryBackoffMs;
+    protected int maxRetryBackoffMs;
+
+    private String userAgent = "log4j2";
+    private Producer producer;
     private String topic;
     private String source;
+    private ProducerConfig producerConfig = new ProducerConfig(new ProjectConfigs());
 
     private DateTimeFormatter formatter;
 
@@ -57,35 +65,42 @@ public class LoghubAppender extends AbstractAppender {
                              Filter filter,
                              Layout<? extends Serializable> layout,
                              boolean ignoreExceptions,
-                             String projectName,
-                             String logstore,
+                             String project,
+                             String logStore,
                              String endpoint,
                              String accessKeyId,
-                             String accessKey,
+                             String accessKeySecret,
                              String stsToken,
-                             int packageTimeoutInMS,
-                             int logsCountPerPackage,
-                             int logsBytesPerPackage,
-                             int memPoolSizeInByte,
-                             int retryTimes,
-                             int maxIOThreadSizeInPool,
+                             int totalSizeInBytes,
+                             int maxBlockMs,
+                             int ioThreadCount,
+                             int batchSizeThresholdInBytes,
+                             int batchCountThreshold,
+                             int lingerMs,
+                             int retries,
+                             int baseRetryBackoffMs,
+                             int maxRetryBackoffMs,
                              String topic,
                              String source,
                              DateTimeFormatter formatter
     ) {
         super(name, filter, layout, ignoreExceptions);
-        this.projectName = projectName;
+        this.project = project;
         this.endpoint = endpoint;
-        this.accessKey = accessKey;
+        this.accessKeySecret = accessKeySecret;
         this.accessKeyId = accessKeyId;
         this.stsToken = stsToken;
-        this.logstore = logstore;
-        this.packageTimeoutInMS = packageTimeoutInMS;
-        this.logsCountPerPackage = logsCountPerPackage;
-        this.logsBytesPerPackage = logsBytesPerPackage;
-        this.memPoolSizeInByte = memPoolSizeInByte;
-        this.retryTimes = retryTimes;
-        this.maxIOThreadSizeInPool = maxIOThreadSizeInPool;
+        this.logStore = logStore;
+
+        this.totalSizeInBytes = totalSizeInBytes;
+        this.retries = retries;
+        this.ioThreadCount = ioThreadCount;
+        this.maxBlockMs = maxBlockMs;
+        this.batchCountThreshold = batchCountThreshold;
+        this.batchSizeThresholdInBytes = batchSizeThresholdInBytes;
+        this.lingerMs = lingerMs;
+        this.baseRetryBackoffMs = baseRetryBackoffMs;
+        this.maxRetryBackoffMs = maxRetryBackoffMs;
         if (topic == null) {
             this.topic = "";
         } else {
@@ -99,32 +114,34 @@ public class LoghubAppender extends AbstractAppender {
     public void start() {
         super.start();
 
-        ProjectConfig projectConfig = new ProjectConfig();
-        projectConfig.projectName = this.projectName;
-        projectConfig.accessKey = this.accessKey;
-        projectConfig.accessKeyId = this.accessKeyId;
-        projectConfig.endpoint = this.endpoint;
-        projectConfig.stsToken = this.stsToken;
+        ProjectConfig projectConfig = buildProjectConfig();
 
-        ProducerConfig producerConfig = new ProducerConfig();
-        producerConfig.packageTimeoutInMS = this.packageTimeoutInMS;
-        producerConfig.logsCountPerPackage = this.logsCountPerPackage;
-        producerConfig.logsBytesPerPackage = this.logsBytesPerPackage;
-        producerConfig.memPoolSizeInByte = this.memPoolSizeInByte;
-        producerConfig.retryTimes = this.retryTimes;
-        producerConfig.maxIOThreadSizeInPool = this.maxIOThreadSizeInPool;
-        producerConfig.userAgent = "log4j2";
+        producerConfig.getProjectConfigs().put(projectConfig);
+        producerConfig.setBatchCountThreshold(batchCountThreshold);
+        producerConfig.setBatchSizeThresholdInBytes(batchSizeThresholdInBytes);
+        producerConfig.setIoThreadCount(ioThreadCount);
+        producerConfig.setRetries(retries);
+        producerConfig.setBaseRetryBackoffMs(baseRetryBackoffMs);
+        producerConfig.setLingerMs(lingerMs);
+        producerConfig.setMaxBlockMs(maxBlockMs);
+        producerConfig.setMaxRetryBackoffMs(maxRetryBackoffMs);
 
         producer = new LogProducer(producerConfig);
-        producer.setProjectConfig(projectConfig);
+    }
+
+    private ProjectConfig buildProjectConfig() {
+        return new ProjectConfig(project, endpoint, accessKeyId, accessKeySecret, null, userAgent);
     }
 
     @Override
     public void stop() {
         super.stop();
         if (producer != null) {
-            producer.flush();
-            producer.close();
+            try {
+                producer.close();
+            } catch (Exception e) {
+                this.error("Failed to close LoghubAppender.", e);
+            }
         }
 
     }
@@ -169,8 +186,17 @@ public class LoghubAppender extends AbstractAppender {
                 item.PushBack(keys[i].toString(), properties.get(keys[i].toString()));
             }
         }
-        producer.send(this.projectName, this.logstore, this.topic, this.source, logItems, new LoghubAppenderCallback(LOGGER,
-                this.projectName, this.logstore, this.topic, this.source, logItems));
+        try {
+            producer.send(this.project, this.logStore, this.topic, this.source, logItems, new LoghubAppenderCallback(LOGGER,
+                    this.project, this.logStore, this.topic, this.source, logItems));
+        } catch (Exception e) {
+            this.error(
+                    "Failed to send log, project=" + project
+                            + ", logStore=" + logStore
+                            + ", topic=" + topic
+                            + ", source=" + source
+                            + ", logItem=" + logItems, e);
+        }
     }
 
     private String getThrowableStr(Throwable throwable) {
@@ -197,18 +223,23 @@ public class LoghubAppender extends AbstractAppender {
             @PluginElement("Layout") Layout<? extends Serializable> layout,
             @PluginConfiguration final Configuration config,
             @PluginAttribute("ignoreExceptions") final String ignore,
-            @PluginAttribute("projectName") final String projectName,
-            @PluginAttribute("logstore") final String logstore,
+            @PluginAttribute("project") final String project,
+            @PluginAttribute("logStore") final String logStore,
             @PluginAttribute("endpoint") final String endpoint,
             @PluginAttribute("accessKeyId") final String accessKeyId,
-            @PluginAttribute("accessKey") final String accessKey,
+            @PluginAttribute("accessKeySecret") final String accessKeySecret,
             @PluginAttribute("stsToken") final String stsToken,
-            @PluginAttribute("packageTimeoutInMS") final String packageTimeoutInMS, // int
-            @PluginAttribute("logsCountPerPackage") final String logsCountPerPackage, // int
-            @PluginAttribute("logsBytesPerPackage") final String logsBytesPerPackage, // int
-            @PluginAttribute("memPoolSizeInByte") final String memPoolSizeInByte, // int
-            @PluginAttribute("retryTimes") final String retryTimes, //int
-            @PluginAttribute("maxIOThreadSizeInPool") final String maxIOThreadSizeInPool, //int
+
+            @PluginAttribute("totalSizeInBytes") final String  totalSizeInBytes,
+            @PluginAttribute("maxBlockMs") final String  maxBlockMs,
+            @PluginAttribute("ioThreadCount") final String  ioThreadCount,
+            @PluginAttribute("batchSizeThresholdInBytes") final String  batchSizeThresholdInBytes,
+            @PluginAttribute("batchCountThreshold") final String  batchCountThreshold,
+            @PluginAttribute("lingerMs") final String  lingerMs,
+            @PluginAttribute("retries") final String  retries,
+            @PluginAttribute("baseRetryBackoffMs") final String  baseRetryBackoffMs,
+            @PluginAttribute("maxRetryBackoffMs") final String maxRetryBackoffMs,
+
             @PluginAttribute("topic") final String topic,
             @PluginAttribute("source") final String source,
             @PluginAttribute("timeFormat") final String timeFormat,
@@ -216,39 +247,32 @@ public class LoghubAppender extends AbstractAppender {
 
         Boolean ignoreExceptions = Booleans.parseBoolean(ignore, true);
 
-        checkCondition(!isStrEmpty(projectName), "Config value [projectName] must not be null.");
-        checkCondition(!isStrEmpty(logstore), "Config value [logstore] must not be null.");
-        checkCondition(!isStrEmpty(endpoint), "Config value [endpoint] must not be null.");
-        checkCondition(!isStrEmpty(accessKeyId), "Config value [accessKeyId] must not be null.");
-        checkCondition(!isStrEmpty(accessKey), "Config value [accessKey] must not be null.");
+        int maxBlockMsInt = parseStrToInt(maxBlockMs, 60);
 
-        int packageTimeoutInMSInt = parseStrToInt(packageTimeoutInMS, 3000);
-        checkCondition((packageTimeoutInMSInt > 10), "Config value [packageTimeoutInMS] must >10.");
+        int baseRetryBackoffMsInt = parseStrToInt(baseRetryBackoffMs, 100);
 
-        int logsCountPerPackageInt = parseStrToInt(logsCountPerPackage, 4096);
-        checkCondition((logsCountPerPackageInt >= 1 && logsCountPerPackageInt <= 4096),
-                "Config value [logsCountPerPackage] must between [1,4096].");
+        int maxRetryBackoffMsInt = parseStrToInt(maxRetryBackoffMs, 100);
 
-        int logsBytesPerPackageInt = parseStrToInt(logsBytesPerPackage, 5 * 1024 * 1024);
-        checkCondition((logsBytesPerPackageInt >= 1 && logsBytesPerPackageInt <= 5 * 1024 * 1024),
-                "Config value [logsBytesPerPackage] must between [1,3145728].");
+        int lingerMsInt = parseStrToInt(lingerMs, 3000);
 
-        int memPoolSizeInByteInt = parseStrToInt(memPoolSizeInByte, 104857600);
-        checkCondition((memPoolSizeInByteInt > 0), "Config value [memPoolSizeInByte] must > 0.");
+        int batchCountThresholdInt = parseStrToInt(batchCountThreshold, 4096);
 
-        int retryTimesInt = parseStrToInt(retryTimes, 3);
-        checkCondition((retryTimesInt > 0), "Config value [retryTimes] must > 0.");
+        int batchSizeThresholdInBytesInt = parseStrToInt(batchSizeThresholdInBytes, 5 * 1024 * 1024);
 
-        int maxIOThreadSizeInPoolInt = parseStrToInt(maxIOThreadSizeInPool, 8);
-        checkCondition((maxIOThreadSizeInPoolInt > 0), "Config value [maxIOThreadSizeInPool] must > 0.");
+        int totalSizeInBytesInt = parseStrToInt(totalSizeInBytes, 104857600);
+
+        int retriesInt = parseStrToInt(retries, 3);
+
+        int ioThreadCountInt = parseStrToInt(ioThreadCount, 8);
 
         String pattern = isStrEmpty(timeFormat) ? DEFAULT_TIME_FORMAT : timeFormat;
         String timeZoneInfo = isStrEmpty(timeZone) ? DEFAULT_TIME_ZONE : timeZone;
         DateTimeFormatter formatter = DateTimeFormat.forPattern(pattern).withZone(DateTimeZone.forID(timeZoneInfo));
 
-        return new LoghubAppender(name, filter, layout, ignoreExceptions, projectName, logstore, endpoint,
-                accessKeyId, accessKey, stsToken, packageTimeoutInMSInt, logsCountPerPackageInt, logsBytesPerPackageInt,
-                memPoolSizeInByteInt, retryTimesInt, maxIOThreadSizeInPoolInt, topic, source, formatter);
+        return new LoghubAppender(name, filter, layout, ignoreExceptions, project, logStore, endpoint,
+                accessKeyId, accessKeySecret, stsToken,totalSizeInBytesInt,maxBlockMsInt,ioThreadCountInt,
+                batchSizeThresholdInBytesInt,batchCountThresholdInt,lingerMsInt,retriesInt,
+                baseRetryBackoffMsInt, maxRetryBackoffMsInt,topic, source, formatter);
     }
 
     static boolean isStrEmpty(String str) {
@@ -272,4 +296,149 @@ public class LoghubAppender extends AbstractAppender {
             throw new IllegalArgumentException(errorMsg);
         }
     }
+
+    public String getProject() {
+        return project;
+    }
+
+    public void setProject(String project) {
+        this.project = project;
+    }
+
+    public String getEndpoint() {
+        return endpoint;
+    }
+
+    public void setEndpoint(String endpoint) {
+        this.endpoint = endpoint;
+    }
+
+    public String getAccessKeyId() {
+        return accessKeyId;
+    }
+
+    public void setAccessKeyId(String accessKeyId) {
+        this.accessKeyId = accessKeyId;
+    }
+
+    public String getAccessKeySecret() {
+        return accessKeySecret;
+    }
+
+    public void setAccessKeySecret(String accessKeySecret) {
+        this.accessKeySecret = accessKeySecret;
+    }
+
+    public String getUserAgent() {
+        return userAgent;
+    }
+
+    public void setUserAgent(String userAgent) {
+        this.userAgent = userAgent;
+    }
+
+    public String getLogStore() {
+        return logStore;
+    }
+
+    public void setLogStore(String logStore) {
+        this.logStore = logStore;
+    }
+
+    public int getTotalSizeInBytes() {
+        return producerConfig.getTotalSizeInBytes();
+    }
+
+    public void setTotalSizeInBytes(int totalSizeInBytes) {
+        producerConfig.setTotalSizeInBytes(totalSizeInBytes);
+    }
+
+    public long getMaxBlockMs() {
+        return producerConfig.getMaxBlockMs();
+    }
+
+    public void setMaxBlockMs(long maxBlockMs) {
+        producerConfig.setMaxBlockMs(maxBlockMs);
+    }
+
+    public int getIoThreadCount() {
+        return producerConfig.getIoThreadCount();
+    }
+
+    public void setIoThreadCount(int ioThreadCount) {
+        producerConfig.setIoThreadCount(ioThreadCount);
+    }
+
+    public int getBatchSizeThresholdInBytes() {
+        return producerConfig.getBatchSizeThresholdInBytes();
+    }
+
+    public void setBatchSizeThresholdInBytes(int batchSizeThresholdInBytes) {
+        producerConfig.setBatchSizeThresholdInBytes(batchSizeThresholdInBytes);
+    }
+
+    public int getBatchCountThreshold() {
+        return producerConfig.getBatchCountThreshold();
+    }
+
+    public void setBatchCountThreshold(int batchCountThreshold) {
+        producerConfig.setBatchCountThreshold(batchCountThreshold);
+    }
+
+    public int getLingerMs() {
+        return producerConfig.getLingerMs();
+    }
+
+    public void setLingerMs(int lingerMs) {
+        producerConfig.setLingerMs(lingerMs);
+    }
+
+    public int getRetries() {
+        return producerConfig.getRetries();
+    }
+
+    public void setRetries(int retries) {
+        producerConfig.setRetries(retries);
+    }
+
+    public int getMaxReservedAttempts() {
+        return producerConfig.getMaxReservedAttempts();
+    }
+
+    public void setMaxReservedAttempts(int maxReservedAttempts) {
+        producerConfig.setMaxReservedAttempts(maxReservedAttempts);
+    }
+
+    public long getBaseRetryBackoffMs() {
+        return producerConfig.getBaseRetryBackoffMs();
+    }
+
+    public void setBaseRetryBackoffMs(long baseRetryBackoffMs) {
+        producerConfig.setBaseRetryBackoffMs(baseRetryBackoffMs);
+    }
+
+    public long getMaxRetryBackoffMs() {
+        return producerConfig.getMaxRetryBackoffMs();
+    }
+
+    public void setMaxRetryBackoffMs(long maxRetryBackoffMs) {
+        producerConfig.setMaxRetryBackoffMs(maxRetryBackoffMs);
+    }
+
+    public String getTopic() {
+        return topic;
+    }
+
+    public void setTopic(String topic) {
+        this.topic = topic;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
+
 }

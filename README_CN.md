@@ -40,7 +40,7 @@ __topic__: yyy
 
 
 ## 版本支持
-* log-loghub-producer 0.1.13
+* aliyun-log-producer 0.2.0
 * protobuf-java 2.5.0
 
 > 该版本主要适配于Log4J 2.X以上版本，以下版本请参考[aliyun-log-log4j-appender](https://github.com/aliyun/aliyun-log-log4j-appender)
@@ -69,17 +69,20 @@ __topic__: yyy
 ```
 <Appenders>
     <Loghub name="Loghub"
-            projectName="your project"
-            logstore="your logstore"
+            project="your project"
+            logStore="your logStore"
             endpoint="your project endpoint"
-            accessKeyId="your accesskey id"
-            accessKey="your accesskey"
-            packageTimeoutInMS="3000"
-            logsCountPerPackage="4096"
-            logsBytesPerPackage="3145728"
-            memPoolSizeInByte="104857600"
-            retryTimes="3"
-            maxIOThreadSizeInPool="8"
+            accessKeyId="your accessKey id"
+            accessKeySecret="your accessKey secret"
+            totalSizeInBytes="104857600"
+            maxBlockMs="60000"
+            ioThreadCount="8"
+            batchSizeThresholdInBytes="524288"
+            batchCountThreshold="4096"
+            lingerMs="2000"
+            retries="10"
+            baseRetryBackoffMs="100"
+            maxRetryBackoffMs="100"
             topic="your topic"
             source="your source"
             timeFormat="yyyy-MM-dd'T'HH:mmZ"
@@ -104,14 +107,14 @@ Aliyun Log Log4j2 Appender 可供配置的属性（参数）如下，其中注�
 
 ```
 #日志服务的 project 名，必选参数
-projectName = [your project]
+project = [your project]
 #日志服务的 logstore 名，必选参数
-logstore = [your logstore]
+logStore = [your logStore]
 #日志服务的 HTTP 地址，必选参数
 endpoint = [your project endpoint]
 #用户身份标识，必选参数
 accessKeyId = [your accesskey id]
-accessKey = [your accesskey]
+accessKeySecret = [your accessKeySecret]
 
 #被缓存起来的日志的发送超时时间，如果缓存超时，则会被立即发送，单位是毫秒，默认值为3000，最小值为10，可选参数
 packageTimeoutInMS = 3000
@@ -123,8 +126,9 @@ logsBytesPerPackage = 3145728
 memPoolSizeInByte = 1048576000
 #指定I/O线程池最大线程数量，主要用于发送数据到日志服务，默认是8，可选参数
 maxIOThreadSizeInPool = 8
+
 #指定发送失败时重试的次数，如果超过该值，会把失败信息记录到log4j2的StatusLogger里，默认是3，可选参数
-retryTimes = 3
+retries = 3
 
 #指定日志主题，默认为 ""，可选参数
 topic = [your topic]
