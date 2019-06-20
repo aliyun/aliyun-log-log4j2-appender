@@ -5,6 +5,7 @@ import com.aliyun.openservices.aliyun.log.producer.ProjectConfigs;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.ThreadContext;
 import org.apache.logging.log4j.status.StatusData;
 import org.apache.logging.log4j.status.StatusLogger;
 import org.junit.AfterClass;
@@ -48,6 +49,8 @@ public class LoghubAppenderTest {
 
     @Test
     public void testLogThrowable() {
+        ThreadContext.put("THREAD_ID1", "name1");
+        ThreadContext.put("THREAD_ID2", "name2");
         LOGGER.error("This is a test error message logged by log4j2.",
                 new UnsupportedOperationException("Log4j2 UnsupportedOperationException"));
     }

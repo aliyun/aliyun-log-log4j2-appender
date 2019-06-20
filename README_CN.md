@@ -215,6 +215,40 @@ log:  2018-07-15 21:12:29,682 INFO [main] TestAppender: info message.
 
 **A**：当您将 `timeZone` 指定为 `Asia/Shanghai` 时，`time` 字段的时区将为东八区。timeZone 字段可能的取值请参考 [java-util-timezone](http://tutorials.jenkov.com/java-date-time/java-util-timezone.html)。
 
+**Q**：如果想在Spring Boot 2 中引入 aliyun-log-log4j2-appender？
+
+**A**：使用以下依赖:
+```
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter</artifactId>
+        <exclusions>
+            <exclusion>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-logging</artifactId>
+            </exclusion>
+            <exclusion>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-jcl</artifactId>
+            </exclusion>
+        </exclusions>
+    </dependency>
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-log4j2</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>com.google.protobuf</groupId>
+        <artifactId>protobuf-java</artifactId>
+        <version>2.5.0</version>
+    </dependency>
+    <dependency>
+        <groupId>com.aliyun.openservices</groupId>
+        <artifactId>aliyun-log-log4j2-appender</artifactId>
+        <version>0.1.11</version>
+    </dependency>
+```
+
 ## 贡献者
 [@LNAmp](https://github.com/LNAmp) [@zzboy](https://github.com/zzboy) 对项目作了很大贡献。
 

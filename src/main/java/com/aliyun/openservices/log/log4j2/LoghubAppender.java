@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 
 import com.aliyun.openservices.aliyun.log.producer.LogProducer;
 import com.aliyun.openservices.aliyun.log.producer.Producer;
@@ -60,6 +60,7 @@ public class LoghubAppender extends AbstractAppender {
     private ProducerConfig producerConfig = new ProducerConfig(new ProjectConfigs());
 
     private DateTimeFormatter formatter;
+    private String mdcFields;
 
     protected LoghubAppender(String name,
                              Filter filter,
@@ -82,7 +83,8 @@ public class LoghubAppender extends AbstractAppender {
                              int maxRetryBackoffMs,
                              String topic,
                              String source,
-                             DateTimeFormatter formatter
+                             DateTimeFormatter formatter,
+                             String mdcFields
     ) {
         super(name, filter, layout, ignoreExceptions);
         this.project = project;
@@ -108,6 +110,7 @@ public class LoghubAppender extends AbstractAppender {
         }
         this.source = source;
         this.formatter = formatter;
+        this.mdcFields = mdcFields;
     }
 
     @Override
@@ -178,14 +181,11 @@ public class LoghubAppender extends AbstractAppender {
             item.PushBack("log", new String(getLayout().toByteArray(event)));
         }
 
-        Map<String, String> properties = event.getContextMap();
-        if (properties.size() > 0) {
-            Object[] keys = properties.keySet().toArray();
-            Arrays.sort(keys);
-            for (int i = 0; i < keys.length; i++) {
-                item.PushBack(keys[i].toString(), properties.get(keys[i].toString()));
-            }
-        }
+        Optional.ofNullable(mdcFields).ifPresent(
+                f->event.getContextMap().entrySet().stream()
+                        .filter(v->Arrays.stream(f.split(",")).anyMatch(i->i.equals(v.getKey())))
+                        .forEach(map-> item.PushBack(map.getKey(),map.getValue()))
+        );
         try {
             producer.send(this.project, this.logStore, this.topic, this.source, logItems, new LoghubAppenderCallback(LOGGER,
                     this.project, this.logStore, this.topic, this.source, logItems));
@@ -243,7 +243,8 @@ public class LoghubAppender extends AbstractAppender {
             @PluginAttribute("topic") final String topic,
             @PluginAttribute("source") final String source,
             @PluginAttribute("timeFormat") final String timeFormat,
-            @PluginAttribute("timeZone") final String timeZone) {
+            @PluginAttribute("timeZone") final String timeZone,
+            @PluginAttribute("mdcFields") final String mdcFields) {
 
         Boolean ignoreExceptions = Booleans.parseBoolean(ignore, true);
 
@@ -272,7 +273,7 @@ public class LoghubAppender extends AbstractAppender {
         return new LoghubAppender(name, filter, layout, ignoreExceptions, project, logStore, endpoint,
                 accessKeyId, accessKeySecret, stsToken,totalSizeInBytesInt,maxBlockMsInt,ioThreadCountInt,
                 batchSizeThresholdInBytesInt,batchCountThresholdInt,lingerMsInt,retriesInt,
-                baseRetryBackoffMsInt, maxRetryBackoffMsInt,topic, source, formatter);
+                baseRetryBackoffMsInt, maxRetryBackoffMsInt,topic, source, formatter,mdcFields);
     }
 
     static boolean isStrEmpty(String str) {
@@ -441,4 +442,7 @@ public class LoghubAppender extends AbstractAppender {
         this.source = source;
     }
 
+    public void setMdcFields(String mdcFields) {
+        this.mdcFields = mdcFields;
+    }
 }

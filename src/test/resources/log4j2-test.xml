@@ -20,7 +20,8 @@
                 source="your source"
                 timeFormat="yyyy-MM-dd'T'HH:mmZ"
                 timeZone="UTC"
-                ignoreExceptions="true">
+                ignoreExceptions="true"
+                mdcFields="THREAD_ID1">
             <PatternLayout
                     pattern="%d{HH:mm:ss.SSS} %-5level %class{36} %L %M - %msg%xEx"/>
         </Loghub>
