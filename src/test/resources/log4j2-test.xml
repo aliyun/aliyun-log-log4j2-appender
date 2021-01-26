@@ -8,7 +8,7 @@
                 accessKeyId="${env:accessKeyId}"
                 accessKeySecret="${env:accessKeySecret}"
                 totalSizeInBytes="104857600"
-                maxBlockMs="60000"
+                maxBlockMs="0"
                 ioThreadCount="8"
                 batchSizeThresholdInBytes="524288"
                 batchCountThreshold="4096"

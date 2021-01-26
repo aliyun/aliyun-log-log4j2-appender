@@ -76,7 +76,7 @@ Take `log4j2.xml` as an example, you can configure the appender and logger relat
             accessKeyId="your accessKey id"
             accessKeySecret="your accessKey secret"
             totalSizeInBytes="104857600"
-            maxBlockMs="60000"
+            maxBlockMs="0"
             ioThreadCount="8"
             batchSizeThresholdInBytes="524288"
             batchCountThreshold="4096"
@@ -115,8 +115,8 @@ accessKeySecret = [your accessKeySecret]
 
 # The upper limit log size that a single producer instance can hold, default is 100MB.
 totalSizeInBytes=104857600
-# If the producer has insufficient free space, the caller's maximum blocking time on the send method, defaults is 60 seconds.
-maxBlockMs=60
+# If the producer has insufficient free space, the caller's maximum blocking time on the send method, defaults is 60 seconds. In order not to block the log printing thread, it is strongly recommended to set this value to 0.
+maxBlockMs=0
 # The thread pool size for executing log sending tasks, defaults is the number of processors available.
 ioThreadCount=8
 # When the size of the cached log in a Producer Batch is greater than or equal batchSizeThresholdInBytes, the batch will be send, default is 512KB, maximum can be set to 5MB.

@@ -248,7 +248,7 @@ public class LoghubAppender extends AbstractAppender {
 
         Boolean ignoreExceptions = Booleans.parseBoolean(ignore, true);
 
-        int maxBlockMsInt = parseStrToInt(maxBlockMs, 60);
+        int maxBlockMsInt = parseStrToInt(maxBlockMs, 0);
 
         int baseRetryBackoffMsInt = parseStrToInt(baseRetryBackoffMs, 100);
 
