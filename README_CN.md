@@ -118,7 +118,7 @@ accessKeySecret = [your accessKeySecret]
 
 #单个 producer 实例能缓存的日志大小上限，默认为 100MB。
 totalSizeInBytes=104857600
-#如果 producer 可用空间不足，调用者在 send 方法上的最大阻塞时间，默认为 60 秒。为了不阻塞打印日志的线程，强烈建议将该值设置成 0。
+#如果 producer 可用空间不足，调用者在 send 方法上的最大阻塞时间，默认为 0 秒。为了不阻塞打印日志的线程，强烈建议将该值设置成 0。
 maxBlockMs=0
 #执行日志发送任务的线程池大小，默认为可用处理器个数。
 ioThreadCount=8

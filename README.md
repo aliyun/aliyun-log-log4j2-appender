@@ -115,7 +115,7 @@ accessKeySecret = [your accessKeySecret]
 
 # The upper limit log size that a single producer instance can hold, default is 100MB.
 totalSizeInBytes=104857600
-# If the producer has insufficient free space, the caller's maximum blocking time on the send method, defaults is 60 seconds. In order not to block the log printing thread, it is strongly recommended to set this value to 0.
+# If the producer has insufficient free space, the caller's maximum blocking time on the send method, defaults is 0 seconds. In order not to block the log printing thread, it is strongly recommended to set this value to 0.
 maxBlockMs=0
 # The thread pool size for executing log sending tasks, defaults is the number of processors available.
 ioThreadCount=8
