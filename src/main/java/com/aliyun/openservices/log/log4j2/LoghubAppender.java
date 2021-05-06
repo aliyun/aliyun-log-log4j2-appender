@@ -10,7 +10,6 @@ import com.aliyun.openservices.aliyun.log.producer.LogProducer;
 import com.aliyun.openservices.aliyun.log.producer.Producer;
 import com.aliyun.openservices.aliyun.log.producer.ProducerConfig;
 import com.aliyun.openservices.aliyun.log.producer.ProjectConfig;
-import com.aliyun.openservices.aliyun.log.producer.ProjectConfigs;
 import com.aliyun.openservices.log.common.LogItem;
 import org.apache.logging.log4j.core.Filter;
 import org.apache.logging.log4j.core.Layout;
@@ -57,7 +56,7 @@ public class LoghubAppender extends AbstractAppender {
     private Producer producer;
     private String topic;
     private String source;
-    private ProducerConfig producerConfig = new ProducerConfig(new ProjectConfigs());
+    private ProducerConfig producerConfig = new ProducerConfig();
 
     private DateTimeFormatter formatter;
     private String mdcFields;
@@ -119,7 +118,6 @@ public class LoghubAppender extends AbstractAppender {
 
         ProjectConfig projectConfig = buildProjectConfig();
 
-        producerConfig.getProjectConfigs().put(projectConfig);
         producerConfig.setBatchCountThreshold(batchCountThreshold);
         producerConfig.setBatchSizeThresholdInBytes(batchSizeThresholdInBytes);
         producerConfig.setIoThreadCount(ioThreadCount);
@@ -130,6 +128,7 @@ public class LoghubAppender extends AbstractAppender {
         producerConfig.setMaxRetryBackoffMs(maxRetryBackoffMs);
 
         producer = new LogProducer(producerConfig);
+        producer.putProjectConfig(projectConfig);
     }
 
     private ProjectConfig buildProjectConfig() {

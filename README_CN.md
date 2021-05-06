@@ -40,7 +40,7 @@ __topic__: yyy
 
 
 ## 版本支持
-* aliyun-log-producer 0.2.0
+* aliyun-log-producer 0.3.9
 * protobuf-java 2.5.0
 
 > 该版本主要适配于Log4J 2.X以上版本，以下版本请参考[aliyun-log-log4j-appender](https://github.com/aliyun/aliyun-log-log4j-appender)
@@ -59,7 +59,7 @@ __topic__: yyy
 <dependency>
     <groupId>com.aliyun.openservices</groupId>
     <artifactId>aliyun-log-log4j2-appender</artifactId>
-    <version>0.1.11</version>
+    <version>0.1.12</version>
 </dependency>
 ```
 
@@ -245,7 +245,7 @@ log:  2018-07-15 21:12:29,682 INFO [main] TestAppender: info message.
     <dependency>
         <groupId>com.aliyun.openservices</groupId>
         <artifactId>aliyun-log-log4j2-appender</artifactId>
-        <version>0.1.11</version>
+        <version>0.1.12</version>
     </dependency>
 ```
 

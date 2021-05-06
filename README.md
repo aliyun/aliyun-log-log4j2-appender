@@ -40,7 +40,7 @@ Field Specifications:
 
 
 ## Supported Version
-* aliyun-log-producer 0.2.0
+* aliyun-log-producer 0.3.9
 * protobuf-java 2.5.0
 
 > This version is mainly suitable for Log4j 2.X versions. For Log4j 1.x, please refer to
@@ -60,7 +60,7 @@ Field Specifications:
 <dependency>
     <groupId>com.aliyun.openservices</groupId>
     <artifactId>aliyun-log-log4j2-appender</artifactId>
-    <version>0.1.11</version>
+    <version>0.1.12</version>
 </dependency>
 ```
 
