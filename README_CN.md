@@ -249,6 +249,11 @@ log:  2018-07-15 21:12:29,682 INFO [main] TestAppender: info message.
     </dependency>
 ```
 
+**Q**：为什么程序在运行时会抛出` java.lang.InterruptedException`？
+
+**A**：aliyun-log-log4j2-appender 会调用 [Producer.send()](https://github.com/aliyun/aliyun-log-java-producer/blob/master/src/main/java/com/aliyun/openservices/aliyun/log/producer/Producer.java#L16) 方法发送数据。执行 send() 方法的线程如果被中断了，如调用了 Thread.interrupted() 方法，就会抛出这样的异常。
+调用  [Producer.send()](https://github.com/aliyun/aliyun-log-java-producer/blob/master/src/main/java/com/aliyun/openservices/aliyun/log/producer/Producer.java#L16) 方法所属的线程和您调用 LOGGER.info() 打印日志的线程是相同的线程，请检查您的程序在何时会调用 Thread.interrupted()  方法。
+
 ## 贡献者
 [@LNAmp](https://github.com/LNAmp) [@zzboy](https://github.com/zzboy) 对项目作了很大贡献。
 
