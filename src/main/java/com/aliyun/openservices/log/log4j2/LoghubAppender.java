@@ -60,6 +60,7 @@ public class LoghubAppender extends AbstractAppender {
 
     private DateTimeFormatter formatter;
     private String mdcFields;
+    private String processor;
 
     protected LoghubAppender(String name,
                              Filter filter,
@@ -83,7 +84,8 @@ public class LoghubAppender extends AbstractAppender {
                              String topic,
                              String source,
                              DateTimeFormatter formatter,
-                             String mdcFields
+                             String mdcFields,
+                             String processor
     ) {
         super(name, filter, layout, ignoreExceptions);
         this.project = project;
@@ -110,6 +112,7 @@ public class LoghubAppender extends AbstractAppender {
         this.source = source;
         this.formatter = formatter;
         this.mdcFields = mdcFields;
+        this.processor = processor;
     }
 
     @Override
@@ -126,6 +129,7 @@ public class LoghubAppender extends AbstractAppender {
         producerConfig.setLingerMs(lingerMs);
         producerConfig.setMaxBlockMs(maxBlockMs);
         producerConfig.setMaxRetryBackoffMs(maxRetryBackoffMs);
+        producerConfig.setProcessor(processor);
 
         producer = new LogProducer(producerConfig);
         producer.putProjectConfig(projectConfig);
@@ -243,7 +247,8 @@ public class LoghubAppender extends AbstractAppender {
             @PluginAttribute("source") final String source,
             @PluginAttribute("timeFormat") final String timeFormat,
             @PluginAttribute("timeZone") final String timeZone,
-            @PluginAttribute("mdcFields") final String mdcFields) {
+            @PluginAttribute("mdcFields") final String mdcFields,
+            @PluginAttribute("processor") final String processor) {
 
         Boolean ignoreExceptions = Booleans.parseBoolean(ignore, true);
 
@@ -270,9 +275,9 @@ public class LoghubAppender extends AbstractAppender {
         DateTimeFormatter formatter = DateTimeFormat.forPattern(pattern).withZone(DateTimeZone.forID(timeZoneInfo));
 
         return new LoghubAppender(name, filter, layout, ignoreExceptions, project, logStore, endpoint,
-                accessKeyId, accessKeySecret, stsToken,totalSizeInBytesInt,maxBlockMsInt,ioThreadCountInt,
-                batchSizeThresholdInBytesInt,batchCountThresholdInt,lingerMsInt,retriesInt,
-                baseRetryBackoffMsInt, maxRetryBackoffMsInt,topic, source, formatter,mdcFields);
+                accessKeyId, accessKeySecret, stsToken, totalSizeInBytesInt, maxBlockMsInt, ioThreadCountInt,
+                batchSizeThresholdInBytesInt, batchCountThresholdInt, lingerMsInt, retriesInt,
+                baseRetryBackoffMsInt, maxRetryBackoffMsInt, topic, source, formatter, mdcFields, processor);
     }
 
     static boolean isStrEmpty(String str) {
@@ -443,5 +448,14 @@ public class LoghubAppender extends AbstractAppender {
 
     public void setMdcFields(String mdcFields) {
         this.mdcFields = mdcFields;
+    }
+
+    public String getProcessor() {
+        return processor;
+    }
+
+    public void setProcessor(String processor) {
+        this.processor = processor;
+        producerConfig.setProcessor(processor);
     }
 }

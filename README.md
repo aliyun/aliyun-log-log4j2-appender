@@ -60,7 +60,7 @@ Field Specifications:
 <dependency>
     <groupId>com.aliyun.openservices</groupId>
     <artifactId>aliyun-log-log4j2-appender</artifactId>
-    <version>0.1.12</version>
+    <version>0.1.15</version>
 </dependency>
 ```
 
@@ -143,6 +143,9 @@ timeFormat = yyyy-MM-dd'T'HH:mm:ssZ
 
 # Specify timezone of the field time, default is UTC, optional
 timeZone = UTC
+
+# Specify ingest processor, default is "", optional
+processor = [ingest processor]
 ```
 
 
