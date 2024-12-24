@@ -150,6 +150,9 @@ timeFormat = yyyy-MM-dd'T'HH:mm:ssZ
 
 #输出到日志服务的时间的时区，默认是 UTC，可选参数（如果希望 time 字段的时区为东八区，可将该值设定为 Asia/Shanghai）
 timeZone = UTC
+
+#写入处理器，默认为 ""，可选参数
+processor = [ingest processor]
 ```
 参阅：https://github.com/aliyun/aliyun-log-producer-java
 
