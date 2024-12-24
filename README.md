@@ -60,7 +60,7 @@ Field Specifications:
 <dependency>
     <groupId>com.aliyun.openservices</groupId>
     <artifactId>aliyun-log-log4j2-appender</artifactId>
-    <version>0.1.12</version>
+    <version>0.1.15</version>
 </dependency>
 ```
 
