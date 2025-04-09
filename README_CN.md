@@ -65,7 +65,7 @@ __topic__: yyy
 
 ### 2. 修改配置文件
 
-以xml型配置文件`log4j2.xml`为例（不存在则在项目根目录创建），配置 Loghub 相关的 appender 与 Logger，例如：
+以xml型配置文件`log4j2.xml`为例（不存在则在项目根目录创建），配置 Loghub 相关的 appender 与 Logger，可参考文件 [log4j2-example.xml](/src/main/resources/log4j2-example.xml)，例如：
 ```
 <Appenders>
     <Loghub name="Loghub"
@@ -92,7 +92,7 @@ __topic__: yyy
     </Loghub>
 </Appenders>
 <Loggers>
-    <Root level="warn">
+    <Root level="INFO">
         <AppenderRef ref="Loghub"/>
     </Root>
 </Loggers>
@@ -132,17 +132,16 @@ Aliyun Log Log4j2 Appender 可供配置的属性（参数）如下，其中注�
 
 参阅：https://github.com/aliyun/aliyun-log-producer-java
 
-## 使用实例
-项目中提供了一个名为`com.aliyun.openservices.log.log4j2.Log4j2AppenderExample`的实例，它会加载 resources 目录下的`log4j2.xml`文件进行log4j2配置。
+## 使用示例
 
-**log4j2.xml样例说明**
-+ 配置了两个appender：loghubAppender1、STDOUT。
+可参考文件 [log4j2-example.xml](/src/main/resources/log4j2-example.xml) 在 resource 目录下创建你的日志配置文件 `log4j2.xml`， 该示例文件配置了两个appender：
+
 + loghubAppender1：将日志输出到阿里云日志服务，输出 INFO 级别的日志。
 + STDOUT：将日志输出到控制台。由于没有对日志级别进行过滤，会输出root中配置的日志级及以上的所有日志。
 
-[Log4j2AppenderExample.java](/src/main/java/com/aliyun/openservices/log/log4j2/example/Log4j2AppenderExample.java)
+[Log4j2AppenderExample.java](/src/main/java/com/aliyun/openservices/log/log4j2/example/Log4j2AppenderExample.java) 提供了打印日志的示例程序。
 
-[log4j2.xml](/src/main/resources/log4j2.xml)
+
 
 ## 错误诊断
 

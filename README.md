@@ -132,7 +132,7 @@ The `Aliyun Log Log4j2 Appender` provides the following parameters.
 
 [Log4j2AppenderExample.java](/src/main/java/com/aliyun/openservices/log/log4j2/example/Log4j2AppenderExample.java)
 
-[log4j2.xml](/src/main/resources/log4j2.xml)
+[log4j2-example.xml](/src/main/resources/log4j2-example.xml)
 
 ## Troubleshooting
 
