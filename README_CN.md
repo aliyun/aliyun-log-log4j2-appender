@@ -126,7 +126,7 @@ Aliyun Log Log4j2 Appender 可供配置的属性（参数）如下，其中注�
 | source                      |                            | 指定日志来源，默认为应用程序所在宿主机的 IP                                         |
 | timeFormat                  | yyyy-MM-dd'T'HH:mm:ssZ     | 输出到日志服务的时间的格式，默认是 yyyy-MM-dd'T'HH:mm:ssZ，可选参数                          |
 | timeZone                    | UTC                        | 输出到日志服务的时间的时区，默认是 UTC，可选参数（如果希望 time 字段的时区为东八区，可将该值设定为 Asia/Shanghai）|
-| ignoreExceptions            | true                       | 是否要记录异常信息，默认为 true                      |
+| ignoreExceptions            | true                       | 是否要忽略异常信息，默认为 true                      |
 | timeResolution              | secs                       | 指定日志的时间精度, 如果指定为纳秒选项，会调用 `SystemNanoClock` 来获取纳秒时间, 可能会增加性能消耗. <br>允许的选项为: <br> - secs: 秒 <br> - ms: 毫秒 <br> - ns: 纳秒                   |
 
 
