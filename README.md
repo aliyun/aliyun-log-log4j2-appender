@@ -125,7 +125,7 @@ The `Aliyun Log Log4j2 Appender` provides the following parameters.
 | timeFormat                     | yyyy-MM-dd'T'HH:mm:ssZ     | Specify time format of the field time, default is yyyy-MM-dd'T'HH:mm:ssZ, optional                      |
 | timeZone                       | UTC                        | Specify timezone of the field time, default is UTC, optional                                            |
 | ignoreExceptions               | true                       | Whether to ignore exceptions                       |
-| timeResolution                 | secs                       | Specify time resolution of the log time sent to AliCloud Log Service, `ns` uses `SystemNanoClock` to get time, and may be performance-intensive. <br>Valid options are: <br> - secs: seconds <br> - ms: milliseconds <br> - ns: nanoseconds                   |
+| timePrecision                  | secs                       | Specify time precision of the log time sent to Aliyun Log Service, the option `ns` uses `SystemNanoClock` to get time, and may be performance-intensive. <br>Valid options are: <br> - secs: seconds <br> - ms: milliseconds <br> - ns: nanoseconds                   |
 
 
 ## Sample Code

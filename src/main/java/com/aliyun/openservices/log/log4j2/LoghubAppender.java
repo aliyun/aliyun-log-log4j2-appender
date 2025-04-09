@@ -64,7 +64,7 @@ public class LoghubAppender extends AbstractAppender {
 
     private DateTimeFormatter formatter;
     private String mdcFields;
-    private TimeResolution timeResolution;
+    private TimePrecision timePrecision;
 
     protected LoghubAppender(String name,
                              Filter filter,
@@ -89,7 +89,7 @@ public class LoghubAppender extends AbstractAppender {
                              String source,
                              DateTimeFormatter formatter,
                              String mdcFields,
-                             TimeResolution timeResolution
+                             TimePrecision timePrecision
     ) {
         super(name, filter, layout, ignoreExceptions);
         this.project = project;
@@ -116,10 +116,10 @@ public class LoghubAppender extends AbstractAppender {
         this.source = source;
         this.formatter = formatter;
         this.mdcFields = mdcFields;
-        this.timeResolution = timeResolution;
+        this.timePrecision = timePrecision;
 
-        // set nano clock if timeResolution is NANO
-        if (TimeResolution.NANO.equals(this.timeResolution)) {
+        // set nano clock if timePrecision is NANO
+        if (TimePrecision.NANO.equals(this.timePrecision)) {
             NanoClock current = Log4jLogEvent.getNanoClock();
             if (current instanceof DummyNanoClock) {
                 Log4jLogEvent.setNanoClock(new SystemNanoClock());
@@ -168,9 +168,9 @@ public class LoghubAppender extends AbstractAppender {
         List<LogItem> logItems = new ArrayList<LogItem>();
         LogItem item = new LogItem((int) (event.getTimeMillis() / 1000));
         logItems.add(item);
-        if (TimeResolution.NANO.equals(timeResolution)) {
+        if (TimePrecision.NANO.equals(timePrecision)) {
             item.SetTimeNsPart((int) (event.getNanoTime() % 1000000000));
-        } else if (TimeResolution.MILLIS.equals(timeResolution)) {
+        } else if (TimePrecision.MILLIS.equals(timePrecision)) {
             item.SetTimeNsPart((int) ((event.getTimeMillis() % 1000) * 1000000));
         }
         DateTime dateTime = new DateTime(event.getTimeMillis());
@@ -263,7 +263,7 @@ public class LoghubAppender extends AbstractAppender {
             @PluginAttribute("timeFormat") final String timeFormat,
             @PluginAttribute("timeZone") final String timeZone,
             @PluginAttribute("mdcFields") final String mdcFields,
-            @PluginAttribute("timeResolution") final String timeResolution) {
+            @PluginAttribute("timePrecision") final String timePrecision) {
 
         Boolean ignoreExceptions = Booleans.parseBoolean(ignore, true);
 
@@ -288,11 +288,11 @@ public class LoghubAppender extends AbstractAppender {
         String pattern = isStrEmpty(timeFormat) ? DEFAULT_TIME_FORMAT : timeFormat;
         String timeZoneInfo = isStrEmpty(timeZone) ? DEFAULT_TIME_ZONE : timeZone;
         DateTimeFormatter formatter = DateTimeFormat.forPattern(pattern).withZone(DateTimeZone.forID(timeZoneInfo));
-        TimeResolution resolution = parseTimeResolution(timeResolution);
+        TimePrecision precision = parseTimePrecision(timePrecision);
         return new LoghubAppender(name, filter, layout, ignoreExceptions, project, logStore, endpoint,
                 accessKeyId, accessKeySecret, stsToken, totalSizeInBytesInt, maxBlockMsInt, ioThreadCountInt,
                 batchSizeThresholdInBytesInt, batchCountThresholdInt, lingerMsInt, retriesInt,
-                baseRetryBackoffMsInt, maxRetryBackoffMsInt, topic, source, formatter, mdcFields, resolution);
+                baseRetryBackoffMsInt, maxRetryBackoffMsInt, topic, source, formatter, mdcFields, precision);
     }
 
     static boolean isStrEmpty(String str) {
@@ -465,19 +465,19 @@ public class LoghubAppender extends AbstractAppender {
         this.mdcFields = mdcFields;
     }
 
-    private enum TimeResolution {
+    private enum TimePrecision {
         SECONDS,
         MILLIS,
         NANO,
     }
 
-    private static TimeResolution parseTimeResolution(String resolution) {
+    private static TimePrecision parseTimePrecision(String resolution) {
         if ("ns".equals(resolution)) {
-            return TimeResolution.NANO;
+            return TimePrecision.NANO;
         }
         if ("ms".equals(resolution)) {
-            return TimeResolution.MILLIS;
+            return TimePrecision.MILLIS;
         }
-        return TimeResolution.SECONDS;
+        return TimePrecision.SECONDS;
     }
 }

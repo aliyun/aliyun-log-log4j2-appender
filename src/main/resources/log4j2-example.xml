@@ -28,7 +28,7 @@
                 timeFormat="yyyy-MM-dd'T'HH:mm:ssZ"
                 timeZone="UTC"
                 ignoreExceptions="true"
-                timeResolution="secs">
+                timePrecision="secs">
         </Loghub>
     </Appenders>
     <Loggers>
