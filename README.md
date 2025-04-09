@@ -102,55 +102,37 @@ Take `log4j2.xml` as an example, you can configure the appender and logger relat
 ## Parameter Description
 
 The `Aliyun Log Log4j2 Appender` provides the following parameters.
-```
-# Specify the project name of your log services, required
-project = [your project]
-# Specify the logstore of your log services, required
-logStore = [your logStore]
-# Specify the HTTP endpoint of your log services, required
-endpoint = [your project endpoint]
-# Specify the account information of your log services, required
-accessKeyId = [your accesskey id]
-accessKeySecret = [your accessKeySecret]
 
-# The upper limit log size that a single producer instance can hold, default is 100MB.
-totalSizeInBytes=104857600
-# If the producer has insufficient free space, the caller's maximum blocking time on the send method, defaults is 0 seconds. In order not to block the log printing thread, it is strongly recommended to set this value to 0.
-maxBlockMs=0
-# The thread pool size for executing log sending tasks, defaults is the number of processors available.
-ioThreadCount=8
-# When the size of the cached log in a Producer Batch is greater than or equal batchSizeThresholdInBytes, the batch will be send, default is 512KB, maximum can be set to 5MB.
-batchSizeThresholdInBytes=524288
-# When the number of log entries cached in a ProducerBatch is greater than or equal to batchCountThreshold, the batch will be send.
-batchCountThreshold=4096
-# A ProducerBatch has a residence time from creation to sending, defaulting is 2 seconds and a minimum of 100 milliseconds.
-lingerMs=2000
-# The number of times a Producer Batch can be retried if it fails to send for the first time, default is 10.
-retries=10
-# The backoff time for the first retry, default 100 milliseconds.
-baseRetryBackoffMs=100
-# The maximum backoff time for retries, default is 50 seconds.
-maxRetryBackoffMs=100
 
-# Specify the topic of your log, default is "", optional
-topic = [your topic]
-
-# Specify the source of your log, default is host ip, optional
-source = [your source]
-
-# Specify time format of the field time, default is yyyy-MM-dd'T'HH:mm:ssZ, optional
-timeFormat = yyyy-MM-dd'T'HH:mm:ssZ
-
-# Specify timezone of the field time, default is UTC, optional
-timeZone = UTC
-```
+| Configuration                  | Default Value              | Description                                                                                             |
+|--------------------------------|----------------------------|---------------------------------------------------------------------------------------------------------|
+| project                        |                            | Specify the project name of your log services, required                                                 |
+| logStore                       |                            | Specify the logstore of your log services, required                                                     |
+| endpoint                       |                            | Specify the HTTP endpoint of your log services, required                                                |
+| accessKeyId                    |                            | Specify the account information of your log services, required                                          |
+| accessKeySecret                |                            | Specify the account information of your log services, required                                          |
+| totalSizeInBytes               | 104857600                  | The upper limit log size that a single producer instance can hold, default is 100MB.                    |
+| maxBlockMs                     | 0                          | If the producer has insufficient free space, the caller's maximum blocking time on the send method. It is strongly recommended to set this value to 0. |
+| ioThreadCount                  | 8                          | The thread pool size for executing log sending tasks, defaults is the number of processors available.   |
+| batchSizeThresholdInBytes      | 524288                     | When the size of the cached log in a Producer Batch is greater than or equal batchSizeThresholdInBytes, the batch will be sent, default is 512KB, maximum can be set to 5MB.  |
+| batchCountThreshold            | 4096                       | When the number of log entries cached in a ProducerBatch is greater than or equal to batchCountThreshold, the batch will be sent. |
+| lingerMs                       | 2000                       | A ProducerBatch has a residence time from creation to sending, defaulting is 2 seconds and a minimum of 100 milliseconds. |
+| retries                        | 10                         | The number of times a Producer Batch can be retried if it fails to send for the first time, default is 10. |
+| baseRetryBackoffMs             | 100                        | The backoff time for the first retry, default 100 milliseconds.                                         |
+| maxRetryBackoffMs              | 100                        | The maximum backoff time for retries, default is 50 seconds.                                            |
+| topic                          |                            | Specify the topic of your log, default is "", optional                                                  |
+| source                         |                            | Specify the source of your log, default is host ip, optional                                            |
+| timeFormat                     | yyyy-MM-dd'T'HH:mm:ssZ     | Specify time format of the field time, default is yyyy-MM-dd'T'HH:mm:ssZ, optional                      |
+| timeZone                       | UTC                        | Specify timezone of the field time, default is UTC, optional                                            |
+| ignoreExceptions               | true                       | Whether to ignore exceptions                       |
+| timeResolution                 | secs                       | Specify time resolution of the log time sent to AliCloud Log Service, `ns` uses `SystemNanoClock` to get time, and may be performance-intensive. <br>Valid options are: <br> - secs: seconds <br> - ms: milliseconds <br> - ns: nanoseconds                   |
 
 
 ## Sample Code
 
 [Log4j2AppenderExample.java](/src/main/java/com/aliyun/openservices/log/log4j2/example/Log4j2AppenderExample.java)
 
-[log4j2-example.xml](/src/main/resources/log4j2-example.xml)
+[log4j2.xml](/src/main/resources/log4j2.xml)
 
 ## Troubleshooting
 
