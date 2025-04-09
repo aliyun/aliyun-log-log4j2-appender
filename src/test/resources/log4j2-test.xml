@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="WARN">
+<Configuration status="WARN" package="com.aliyun.openservices.log.log4j2">
     <Appenders>
         <Loghub name="Loghub"
                 project="${env:project}"
