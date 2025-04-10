@@ -1,67 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="WARN">
+<Configuration status="WARN" package="com.aliyun.openservices.log.log4j2">
     <Appenders>
+
+        <!-- logging to console -->
+        <Console name="STDOUT" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss} %nano [%t] %-5level %logger{36} - %msg%n"/>
+        </Console>
+
+        <!-- logging to aliyun log service -->
         <Loghub name="loghubAppender1"
-                project="test-proj"
-                logStore="store1"
-                endpoint=""
-                accessKeyId=""
-                accessKeySecret=""
+                project="${env:project}"
+                logStore="${env:logStore}"
+                endpoint="${env:endpoint}"
+                accessKeyId="${env:accessKeyId}"
+                accessKeySecret="${env:accessKeySecret}"
                 totalSizeInBytes="104857600"
                 maxBlockMs="0"
-                ioThreadCount="8"
+                ioThreadCount="4"
                 batchSizeThresholdInBytes="524288"
                 batchCountThreshold="4096"
                 lingerMs="2000"
-                retries="10"
+                retries="4"
                 baseRetryBackoffMs="100"
-                maxRetryBackoffMs="100"
-                topic="topic1"
-                source="source1"
+                maxRetryBackoffMs="1000"
+                topic=""
+                source=""
                 timeFormat="yyyy-MM-dd'T'HH:mm:ssZ"
                 timeZone="UTC"
-                ignoreExceptions="true">
+                ignoreExceptions="true"
+                timePrecision="secs">
         </Loghub>
-        <Loghub name="loghubAppender2"
-                project="test-proj"
-                logStore="store2"
-                endpoint=""
-                accessKeyId=""
-                accessKeySecret=""
-                totalSizeInBytes="104857600"
-                maxBlockMs="0"
-                ioThreadCount="8"
-                batchSizeThresholdInBytes="524288"
-                batchCountThreshold="4096"
-                lingerMs="2000"
-                retries="10"
-                baseRetryBackoffMs="100"
-                maxRetryBackoffMs="100"
-                topic="topic2"
-                source="source2"
-                timeFormat="yyyy-MM-dd'T'HH:mm:ssZ"
-                timeZone="Asia/Shanghai"
-                ignoreExceptions="true">
-            <PatternLayout
-                    pattern="%d{HH:mm:ss.SSS} %-5level %class{36} %L %M - %msg%xEx"/>
-            <Filters>
-                <!-- Now deny warn, error and fatal messages -->
-                <ThresholdFilter level="warn"  onMatch="DENY"   onMismatch="NEUTRAL"/>
-                <ThresholdFilter level="error" onMatch="DENY"   onMismatch="NEUTRAL"/>
-                <ThresholdFilter level="fatal" onMatch="DENY"   onMismatch="NEUTRAL"/>
-
-                <!-- This filter accepts info, warn, error, fatal and denies debug/trace -->
-                <ThresholdFilter level="info"  onMatch="ACCEPT" onMismatch="DENY"/>
-            </Filters>
-        </Loghub>
-        <Console name="STDOUT" target="SYSTEM_OUT">
-            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
-        </Console>
     </Appenders>
     <Loggers>
         <Root level="DEBUG">
-            <AppenderRef ref="loghubAppender1" level="WARN"/>
-            <AppenderRef ref="loghubAppender2"/>
+            <AppenderRef ref="loghubAppender1" level="INFO"/>
             <AppenderRef ref="STDOUT"/>
         </Root>
     </Loggers>

@@ -65,7 +65,7 @@ __topic__: yyy
 
 ### 2. 修改配置文件
 
-以xml型配置文件`log4j2.xml`为例（不存在则在项目根目录创建），配置 Loghub 相关的 appender 与 Logger，例如：
+以xml型配置文件`log4j2.xml`为例（不存在则在项目根目录创建），配置 Loghub 相关的 appender 与 Logger，可参考文件 [log4j2-example.xml](/src/main/resources/log4j2-example.xml)，例如：
 ```
 <Appenders>
     <Loghub name="Loghub"
@@ -92,7 +92,7 @@ __topic__: yyy
     </Loghub>
 </Appenders>
 <Loggers>
-    <Root level="warn">
+    <Root level="INFO">
         <AppenderRef ref="Loghub"/>
     </Root>
 </Loggers>
@@ -105,66 +105,43 @@ level 是日志记录的优先级，优先级从高到低分别是 ERROR、WARN�
 
 Aliyun Log Log4j2 Appender 可供配置的属性（参数）如下，其中注释为必选参数的是必须填写的，可选参数在不填写的情况下，使用默认值。
 
-```
-#日志服务的 project 名，必选参数
-project = [your project]
-#日志服务的 logstore 名，必选参数
-logStore = [your logStore]
-#日志服务的 HTTP 地址，必选参数
-endpoint = [your project endpoint]
-#用户身份标识，必选参数
-accessKeyId = [your accesskey id]
-accessKeySecret = [your accessKeySecret]
+| 配置项                       | 默认值                      | 说明                                                                                          |
+|-----------------------------|----------------------------|-----------------------------------------------------------------------------------------------|
+| project                     |                            | 日志服务的 project 名，必选参数                                                              |
+| logStore                    |                            | 日志服务的 logstore 名，必选参数                                                             |
+| endpoint                    |                            | 日志服务的 HTTP 地址，必选参数                                                               |
+| accessKeyId                 |                            | 用户身份标识，必选参数                                                                      |
+| accessKeySecret             |                            | 用户身份标识，必选参数                                                                      |
+| totalSizeInBytes            | 104857600                  | 单个 producer 实例能缓存的日志大小上限，默认为 100MB。                                       |
+| maxBlockMs                  | 0                          | 如果 producer 可用空间不足，调用者在 send 方法上的最大阻塞时间，默认为 0 秒。为了不阻塞打印日志的线程，强烈建议将该值设置成 0。|
+| ioThreadCount               | 8                          | 执行日志发送任务的线程池大小，默认为可用处理器个数。                                         |
+| batchSizeThresholdInBytes   | 524288                     | 当一个 ProducerBatch 中缓存的日志大小大于等于 batchSizeThresholdInBytes 时，该 batch 将被发送，默认为 512 KB，最大可设置成 5MB。|
+| batchCountThreshold         | 4096                       | 当一个 ProducerBatch 中缓存的日志条数大于等于 batchCountThreshold 时，该 batch 将被发送，默认为 4096，最大可设置成 40960。|
+| lingerMs                    | 2000                       | 一个 ProducerBatch 从创建到可发送的逗留时间，默认为 2 秒，最小可设置成 100 毫秒。            |
+| retries                     | 10                         | 如果某个 ProducerBatch 首次发送失败，能够对其重试的次数，默认为 10 次。如果 retries 小于等于 0，该 ProducerBatch 首次发送失败后将直接进入失败队列。|
+| maxReservedAttempts         | 11                         | 该参数越大能让您追溯更多的信息，但同时也会消耗更多的内存。                                   |
+| baseRetryBackoffMs          | 100                        | 首次重试的退避时间，默认为 100 毫秒。Producer 采样指数退避算法，第 N 次重试的计划等待时间为 baseRetryBackoffMs * 2^(N-1)。|
+| maxRetryBackoffMs           | 100                        | 重试的最大退避时间，默认为 50 秒。                                                           |
+| topic                       |                            | 指定日志主题，默认为 ""                                                            |
+| source                      |                            | 指定日志来源，默认为应用程序所在宿主机的 IP                                         |
+| timeFormat                  | yyyy-MM-dd'T'HH:mm:ssZ     | 输出到日志服务的时间的格式，默认是 yyyy-MM-dd'T'HH:mm:ssZ，可选参数                          |
+| timeZone                    | UTC                        | 输出到日志服务的时间的时区，默认是 UTC，可选参数（如果希望 time 字段的时区为东八区，可将该值设定为 Asia/Shanghai）|
+| ignoreExceptions            | true                       | 是否要忽略异常信息，默认为 true                      |
+| timePrecision               | secs                       | 指定日志的时间精度, 这个选项只会影响日志的日志时间，不会影响 time 字段字符串格式。如果指定为`ns`选项，会调用 `SystemNanoClock` 来获取纳秒时间, 可能会增加一定的性能消耗。 <br>允许的选项为: <br> - secs: 秒 <br> - ms: 毫秒 <br> - ns: 纳秒                   |
 
-#单个 producer 实例能缓存的日志大小上限，默认为 100MB。
-totalSizeInBytes=104857600
-#如果 producer 可用空间不足，调用者在 send 方法上的最大阻塞时间，默认为 0 秒。为了不阻塞打印日志的线程，强烈建议将该值设置成 0。
-maxBlockMs=0
-#执行日志发送任务的线程池大小，默认为可用处理器个数。
-ioThreadCount=8
-#当一个 ProducerBatch 中缓存的日志大小大于等于 batchSizeThresholdInBytes 时，该 batch 将被发送，默认为 512 KB，最大可设置成 5MB。
-batchSizeThresholdInBytes=524288
-#当一个 ProducerBatch 中缓存的日志条数大于等于 batchCountThreshold 时，该 batch 将被发送，默认为 4096，最大可设置成 40960。
-batchCountThreshold=4096
-#一个 ProducerBatch 从创建到可发送的逗留时间，默认为 2 秒，最小可设置成 100 毫秒。
-lingerMs=2000
-#如果某个 ProducerBatch 首次发送失败，能够对其重试的次数，默认为 10 次。
-#如果 retries 小于等于 0，该 ProducerBatch 首次发送失败后将直接进入失败队列。
-retries=10
-#该参数越大能让您追溯更多的信息，但同时也会消耗更多的内存。
-maxReservedAttempts=11
-#首次重试的退避时间，默认为 100 毫秒。
-#Producer 采样指数退避算法，第 N 次重试的计划等待时间为 baseRetryBackoffMs * 2^(N-1)。
-baseRetryBackoffMs=100
-#重试的最大退避时间，默认为 50 秒。
-maxRetryBackoffMs=100
 
-#指定日志主题，默认为 ""，可选参数
-topic = [your topic]
-
-#指的日志来源，默认为应用程序所在宿主机的 IP，可选参数
-source = [your source]
-
-#输出到日志服务的时间的格式，默认是 yyyy-MM-dd'T'HH:mm:ssZ，可选参数
-timeFormat = yyyy-MM-dd'T'HH:mm:ssZ
-
-#输出到日志服务的时间的时区，默认是 UTC，可选参数（如果希望 time 字段的时区为东八区，可将该值设定为 Asia/Shanghai）
-timeZone = UTC
-```
 参阅：https://github.com/aliyun/aliyun-log-producer-java
 
-## 使用实例
-项目中提供了一个名为`com.aliyun.openservices.log.log4j2.Log4j2AppenderExample`的实例，它会加载 resources 目录下的`log4j2.xml`文件进行log4j2配置。
+## 使用示例
 
-**log4j2.xml样例说明**
-+ 配置了三个appender：loghubAppender1、loghubAppender2、STDOUT。
-+ loghubAppender1：将日志输出到project=test-proj，logstore=store1。输出WARN、ERROR级别的日志。
-+ loghubAppender2：将日志输出到project=test-proj，logstore=store2。只输出INFO级别的日志。
+可参考文件 [log4j2-example.xml](/src/main/resources/log4j2-example.xml) 在 resource 目录下创建你的日志配置文件 `log4j2.xml`， 该示例文件配置了两个appender：
+
++ loghubAppender1：将日志输出到阿里云日志服务，输出 INFO 级别的日志。
 + STDOUT：将日志输出到控制台。由于没有对日志级别进行过滤，会输出root中配置的日志级及以上的所有日志。
 
-[Log4j2AppenderExample.java](/src/main/java/com/aliyun/openservices/log/log4j2/example/Log4j2AppenderExample.java)
+[Log4j2AppenderExample.java](/src/main/java/com/aliyun/openservices/log/log4j2/example/Log4j2AppenderExample.java) 提供了打印日志的示例程序。
 
-[log4j2-example.xml](/src/main/resources/log4j2-example.xml)
+
 
 ## 错误诊断
 
@@ -172,7 +149,12 @@ timeZone = UTC
 1. 检查配置文件 log4j2.xml 是否限定了 appender 只输出特定级别的日志。比如，是否设置了 root，logger 或 appender 的 level 属性，是否在 appender 中设使用了 [filter](https://logging.apache.org/log4j/2.0/manual/filters.html)。
 2. 检查您项目中引入的 protobuf-java，aliyun-log-log4j2-appender 这两个 jar 包的版本是否和文档中`maven 工程中引入依赖`部分列出的 jar 包版本一致。
 3. 通过观察控制台的输出来诊断您的问题。Aliyun Log Log4j2 Appender 会将 appender 运行过程中产生的异常通过 `org.apache.logging.log4j.status.StatusLogger` 记录下来，默认情况下 log4j2 框架会为 StatusLogger 注册一个 StatusConsoleListener，因此 Aliyun Log Log4j2 Appender 自己运行过程中产生的异常会在默认情况下会输出到控制台。
-
+4. 检查是否配置了 Configuration 节点的 `package` 参数为 `com.aliyun.openservices.log.log4j2`。
+```xml
+<Configuration status="WARN" package="com.aliyun.openservices.log.log4j2">
+    <!-- your configuration -->
+</Configuration>
+```
 ## 常见问题
 
 **Q**：是否支持自定义 log 格式？

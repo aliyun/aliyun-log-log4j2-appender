@@ -21,7 +21,11 @@ import org.apache.logging.log4j.core.config.plugins.PluginAttribute;
 import org.apache.logging.log4j.core.config.plugins.PluginConfiguration;
 import org.apache.logging.log4j.core.config.plugins.PluginElement;
 import org.apache.logging.log4j.core.config.plugins.PluginFactory;
+import org.apache.logging.log4j.core.impl.Log4jLogEvent;
 import org.apache.logging.log4j.core.util.Booleans;
+import org.apache.logging.log4j.core.util.DummyNanoClock;
+import org.apache.logging.log4j.core.util.NanoClock;
+import org.apache.logging.log4j.core.util.SystemNanoClock;
 import org.apache.logging.log4j.core.util.Throwables;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -60,6 +64,7 @@ public class LoghubAppender extends AbstractAppender {
 
     private DateTimeFormatter formatter;
     private String mdcFields;
+    private TimePrecision timePrecision;
 
     protected LoghubAppender(String name,
                              Filter filter,
@@ -83,7 +88,8 @@ public class LoghubAppender extends AbstractAppender {
                              String topic,
                              String source,
                              DateTimeFormatter formatter,
-                             String mdcFields
+                             String mdcFields,
+                             TimePrecision timePrecision
     ) {
         super(name, filter, layout, ignoreExceptions);
         this.project = project;
@@ -110,6 +116,15 @@ public class LoghubAppender extends AbstractAppender {
         this.source = source;
         this.formatter = formatter;
         this.mdcFields = mdcFields;
+        this.timePrecision = timePrecision;
+
+        // set nano clock if timePrecision is NANO
+        if (TimePrecision.NANO.equals(this.timePrecision)) {
+            NanoClock current = Log4jLogEvent.getNanoClock();
+            if (current instanceof DummyNanoClock) {
+                Log4jLogEvent.setNanoClock(new SystemNanoClock());
+            }
+        }
     }
 
     @Override
@@ -151,9 +166,13 @@ public class LoghubAppender extends AbstractAppender {
     @Override
     public void append(LogEvent event) {
         List<LogItem> logItems = new ArrayList<LogItem>();
-        LogItem item = new LogItem();
+        LogItem item = new LogItem((int) (event.getTimeMillis() / 1000));
         logItems.add(item);
-        item.SetTime((int) (event.getTimeMillis() / 1000));
+        if (TimePrecision.NANO.equals(timePrecision)) {
+            item.SetTimeNsPart((int) (event.getNanoTime() % 1000000000));
+        } else if (TimePrecision.MILLIS.equals(timePrecision)) {
+            item.SetTimeNsPart((int) ((event.getTimeMillis() % 1000) * 1000000));
+        }
         DateTime dateTime = new DateTime(event.getTimeMillis());
         item.PushBack("time", dateTime.toString(formatter));
         item.PushBack("level", event.getLevel().toString());
@@ -243,7 +262,8 @@ public class LoghubAppender extends AbstractAppender {
             @PluginAttribute("source") final String source,
             @PluginAttribute("timeFormat") final String timeFormat,
             @PluginAttribute("timeZone") final String timeZone,
-            @PluginAttribute("mdcFields") final String mdcFields) {
+            @PluginAttribute("mdcFields") final String mdcFields,
+            @PluginAttribute("timePrecision") final String timePrecision) {
 
         Boolean ignoreExceptions = Booleans.parseBoolean(ignore, true);
 
@@ -268,11 +288,11 @@ public class LoghubAppender extends AbstractAppender {
         String pattern = isStrEmpty(timeFormat) ? DEFAULT_TIME_FORMAT : timeFormat;
         String timeZoneInfo = isStrEmpty(timeZone) ? DEFAULT_TIME_ZONE : timeZone;
         DateTimeFormatter formatter = DateTimeFormat.forPattern(pattern).withZone(DateTimeZone.forID(timeZoneInfo));
-
+        TimePrecision precision = parseTimePrecision(timePrecision);
         return new LoghubAppender(name, filter, layout, ignoreExceptions, project, logStore, endpoint,
-                accessKeyId, accessKeySecret, stsToken,totalSizeInBytesInt,maxBlockMsInt,ioThreadCountInt,
-                batchSizeThresholdInBytesInt,batchCountThresholdInt,lingerMsInt,retriesInt,
-                baseRetryBackoffMsInt, maxRetryBackoffMsInt,topic, source, formatter,mdcFields);
+                accessKeyId, accessKeySecret, stsToken, totalSizeInBytesInt, maxBlockMsInt, ioThreadCountInt,
+                batchSizeThresholdInBytesInt, batchCountThresholdInt, lingerMsInt, retriesInt,
+                baseRetryBackoffMsInt, maxRetryBackoffMsInt, topic, source, formatter, mdcFields, precision);
     }
 
     static boolean isStrEmpty(String str) {
@@ -443,5 +463,21 @@ public class LoghubAppender extends AbstractAppender {
 
     public void setMdcFields(String mdcFields) {
         this.mdcFields = mdcFields;
+    }
+
+    private enum TimePrecision {
+        SECONDS,
+        MILLIS,
+        NANO,
+    }
+
+    private static TimePrecision parseTimePrecision(String resolution) {
+        if ("ns".equals(resolution)) {
+            return TimePrecision.NANO;
+        }
+        if ("ms".equals(resolution)) {
+            return TimePrecision.MILLIS;
+        }
+        return TimePrecision.SECONDS;
     }
 }
